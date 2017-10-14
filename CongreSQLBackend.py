@@ -1,6 +1,6 @@
 import psycopg2
 import sys
-from Readers import Reader
+import Reader
 
 
 class SQLQueries:

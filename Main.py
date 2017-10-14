@@ -1,4 +1,4 @@
-from App import CongreSQLBackend as App
+import CongreSQLBackend as App
 import sys
 
 if __name__ == '__main__':

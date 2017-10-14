@@ -6,5 +6,5 @@ class Reader:
     """
 
     def __init__(self):
-        with open('../App/ConnString.json') as theReader:
+        with open('./ConnString.json') as theReader:
             self.theReader = json.load(theReader)
