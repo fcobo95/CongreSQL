@@ -11,10 +11,10 @@ class theApp:
 
 if __name__ == '__main__':
     def runTheApp():
-        theConnection = input("Want to connect? [Y/N]")
+        theConnection = input(">>Want to connect? [Y/N]")
         if theConnection == "Y" or theConnection == "y":
             theApp()
         else:
-            print("See you later, {}".format(getpass.getuser()))
+            print(">>See you later, {}".format(getpass.getuser()))
 
     runTheApp()
