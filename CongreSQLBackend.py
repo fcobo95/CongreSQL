@@ -95,6 +95,7 @@ class SQLQueries:
                 or theOption == "q" \
                 or theOption == "Quit" \
                 or theOption == "quit":
+            self.clearScreen()
             self.closeApp()
 
     def createDataBase(self):
