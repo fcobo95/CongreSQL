@@ -49,17 +49,17 @@ class SQLQueries:
 #                             | |  | ||  __/| | | || |_| |                             #
 #                             |_|  |_| \___||_| |_| \__,_|                             #
 ########################################################################################
-#    1. CREATE DATABASE           2. CREATE TABLE           3. CREATE FUNCTION         #
-#    4. CREATE INDEX              5. CREATE KEY             6. ALTER TABLE             #
-#    7. ALTER FUNCTION            8. ALTER INDEX            9. ALTER KEY               #
-#    10. UPDATE                   11. DELETE                12. DROP DATABASE          #
-#    13. DROP TABLE               14. TRUNCATE TABLE        15. SELECT                 #
 #                                                                                      #
-#                                 16. QUIT                                             #
+#    1. CREATE DATABASE           2. CREATE TABLE           3. CREATE FUNCTION         #
+#    4. CREATE INDEX              5. ALTER TABLE            6. ALTER FUNCTION          #
+#    7. ALTER INDEX               8. ALTER KEY              9. UPDATE                  #
+#    10. DELETE                   11. DROP DATABASE         12. DROP TABLE             #
+#    13. TRUNCATE TABLE           14. SELECT                15. QUIT                   #
+#                                                                                      #
 ########################################################################################
                     """
         self.clearScreen()
-        print(theMenu.center(width=1920))
+        print(theMenu)
         theOption = input(">>>>").replace(" ", "")
         if theOption == "1":
             self.createDataBase()
@@ -70,28 +70,26 @@ class SQLQueries:
         elif theOption == "4":
             self.createIndex()
         elif theOption == "5":
-            self.createKeys()
-        elif theOption == "6":
             self.alterTable()
-        elif theOption == "7":
+        elif theOption == "6":
             self.alterFunction()
-        elif theOption == "8":
+        elif theOption == "7":
             self.alterIndex()
-        elif theOption == "9":
+        elif theOption == "8":
             self.alterKeys()
-        elif theOption == "10":
+        elif theOption == "9":
             self.updateTable()
-        elif theOption == "11":
+        elif theOption == "10":
             self.deleteRow()
-        elif theOption == "12":
+        elif theOption == "11":
             self.dropDatabase()
-        elif theOption == "13":
+        elif theOption == "12":
             self.dropTable()
-        elif theOption == "14":
+        elif theOption == "13":
             self.truncateTable()
-        elif theOption == "15":
+        elif theOption == "14":
             self.selectTable()
-        elif theOption == "16" \
+        elif theOption == "15" \
                 or theOption == "q" \
                 or theOption == "Quit" \
                 or theOption == "quit":
@@ -100,7 +98,7 @@ class SQLQueries:
 
     def createDataBase(self):
         theDBName = input(">>Enter the new database name: ")
-        if theDBName == "\quit":
+        if self.checkForQuit(theDBName):
             self.chooseTheOption()
         else:
             theQuery = """CREATE DATABASE {}""" \
@@ -127,12 +125,12 @@ class SQLQueries:
     def createTable(self):
 
         theTableName = input(">>Enter the table name:\n")
-        if theTableName == "\quit":
+        if self.checkForQuit(theTableName):
             self.chooseTheOption()
         theAttributes = input(">>Ignore putting '(' and ')' for the attributes and ';' to finish the command\n"
                               "Example ==> id INTEGER, name VARCHAR(20)\n"
                               "Enter the attributes:\n")
-        if theAttributes == "\quit":
+        if self.checkForQuit(theAttributes):
             self.chooseTheOption()
         else:
             theQuery = """CREATE TABLE {}({})""".format(theTableName, theAttributes)
@@ -157,48 +155,70 @@ class SQLQueries:
 
     def createFunction(self):
         theFunctionName = input(">>Enter the function name you want to create:\n")
-        if theFunctionName == "\quit":
+        if self.checkForQuit(theFunctionName):
             self.chooseTheOption()
 
     def createIndex(self):
         theIndexName = input(">>>>Enter the index name:\n")
-        if theIndexName == "\quit":
+        if self.checkForQuit(theIndexName):
             self.chooseTheOption()
+
         theMessage = input(">>Do you want this to be a unique index? [Y/N]")
-        if theMessage == "\quit":
+        if self.checkForQuit(theMessage):
             self.chooseTheOption()
+
         theTableName = input(">>Specify the table name:\n")
-        if theTableName == "\quit":
+        if self.checkForQuit(theTableName):
             self.chooseTheOption()
+
         theColumnName = input(">>Enter on which column the index will be created:\n")
-        if theColumnName == "\quit":
+        if self.checkForQuit(theColumnName):
             self.chooseTheOption()
+            
         if theMessage == "Y" or "y":
             theQuery = """CREATE UNIQUE INDEX {} ON {}({})""".format(theIndexName, theTableName, theColumnName)
-        else:
+            try:
+                self.theCursor.execute(theQuery)
+                print("Succesful creation of index {} on table {}, column {}"
+                      .format(theIndexName, theTableName, theColumnName))
+                self.theCursor.close()
+                self.theConnection.commit()
+                theOptions = input(">>Want to do some other thing? [Y/N]")
+                if theOptions == "Y" or theOptions == "y":
+                    self.chooseTheOption()
+            except (Exception, psycopg2.DatabaseError) as theError:
+                print(self.formatTheError(theError))
+                theMessage = input(">>Want to try again? [Y/N]")
+                if theMessage == 'Y' or theMessage == 'y':
+                    self.createIndex()
+                else:
+                    self.closeApp()
+            finally:
+                if self.theConnection is not None:
+                    self.theConnection.close()
+        elif theMessage == "N" or "n":
             theQuery = """CREATE INDEX {} ON {}({})""".format(theIndexName, theTableName, theColumnName)
-        try:
-            self.theCursor.execute(theQuery)
-            print("Succesful creation of index {} on table {}, column {}"
-                  .format(theIndexName, theTableName, theColumnName))
-            self.theCursor.close()
-            self.theConnection.commit()
-            theOptions = input(">>Want to do some other thing? [Y/N]")
-            if theOptions == "Y" or theOptions == "y":
-                self.chooseTheOption()
-        except (Exception, psycopg2.DatabaseError) as theError:
-            print(self.formatTheError(theError))
-            theMessage = input(">>Want to try again? [Y/N]")
-            if theMessage == 'Y' or theMessage == 'y':
-                self.createIndex()
-            else:
-                self.closeApp()
-        finally:
-            if self.theConnection is not None:
-                self.theConnection.close()
-
-    def createKeys(self):
-        pass
+            try:
+                self.theCursor.execute(theQuery)
+                print("Succesful creation of index {} on table {}, column {}"
+                      .format(theIndexName, theTableName, theColumnName))
+                self.theCursor.close()
+                self.theConnection.commit()
+                theOptions = input(">>Want to do some other thing? [Y/N]")
+                if theOptions == "Y" or theOptions == "y":
+                    self.chooseTheOption()
+            except (Exception, psycopg2.DatabaseError) as theError:
+                print(self.formatTheError(theError))
+                theMessage = input(">>Want to try again? [Y/N]")
+                if theMessage == 'Y' or theMessage == 'y':
+                    self.createIndex()
+                else:
+                    self.closeApp()
+            finally:
+                if self.theConnection is not None:
+                    self.theConnection.close()
+        else:
+            print("Invalid option!")
 
     def alterTable(self):
         pass
@@ -222,13 +242,71 @@ class SQLQueries:
         pass
 
     def dropTable(self):
-        pass
+        theTableName = input("Enter the name of the table to be dropped:\n")
+        if self.checkForQuit(theTableName):
+            self.chooseTheOption()
+        else:
+            theQuery = """DROP TABLE {} CASCADE CONSTRAINTS""".format(theTableName)
+            try:
+                self.theCursor.execute(theQuery)
+                print("Succesful dropping table {}"
+                      .format(theTableName))
+                self.theCursor.close()
+                self.theConnection.commit()
+                theOptions = input(">>Want to do some other thing? [Y/N]")
+                if theOptions == "Y" or theOptions == "y":
+                    self.chooseTheOption()
+            except (Exception, psycopg2.DatabaseError) as theError:
+                print(self.formatTheError(theError))
+                theMessage = input(">>Want to try again? [Y/N]")
+                if theMessage == 'Y' or theMessage == 'y':
+                    self.createIndex()
+                else:
+                    self.closeApp()
+            finally:
+                if self.theConnection is not None:
+                    self.theConnection.close()
 
     def truncateTable(self):
-        pass
+        print("If you are going to truncate various tables, separate them with commas.")
+        theTableName = input("Enter the name of the table you wish to truncate:\n")
+        if self.checkForQuit(theTableName):
+            self.chooseTheOption()
+        else:
+            theQuery = """TRUNCATE {}""".format(theTableName)
+            try:
+                self.theCursor.execute(theQuery)
+                print("Succesful truncation on table {}"
+                      .format(theTableName))
+                self.theCursor.close()
+                self.theConnection.commit()
+                theOptions = input(">>Want to do some other thing? [Y/N]")
+                if theOptions == "Y" or theOptions == "y":
+                    self.chooseTheOption()
+            except (Exception, psycopg2.DatabaseError) as theError:
+                print(self.formatTheError(theError))
+                theMessage = input(">>Want to try again? [Y/N]")
+                if theMessage == 'Y' or theMessage == 'y':
+                    self.createIndex()
+                else:
+                    self.closeApp()
+            finally:
+                if self.theConnection is not None:
+                    self.theConnection.close()
 
     def selectTable(self):
-        pass
+        theArguments = input("Please enter the table columns you are going to query:\n")
+        if self.checkForQuit(theArguments):
+            self.chooseTheOption()
+
+        theTableName = input("Please specify the table you are querying:\n")
+        if self.checkForQuit(theTableName):
+            self.chooseTheOption()
+
+        theMessage = input("Do you want to add something else? [Y/N]")
+
+    def checkForQuit(self, theTableName):
+        return theTableName == "\quit"
 
     def clearScreen(self):
         os.system('cls' if os.name == 'nt' else 'clear')
