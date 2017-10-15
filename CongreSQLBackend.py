@@ -174,7 +174,7 @@ class SQLQueries:
         theColumnName = input(">>Enter on which column the index will be created:\n")
         if self.checkForQuit(theColumnName):
             self.chooseTheOption()
-            
+
         if theMessage == "Y" or "y":
             theQuery = """CREATE UNIQUE INDEX {} ON {}({})""".format(theIndexName, theTableName, theColumnName)
             try:
@@ -294,6 +294,7 @@ class SQLQueries:
                 if self.theConnection is not None:
                     self.theConnection.close()
 
+    #TODO: STILL NEEDS WORK.
     def selectTable(self):
         theArguments = input("Please enter the table columns you are going to query:\n")
         if self.checkForQuit(theArguments):
@@ -302,8 +303,25 @@ class SQLQueries:
         theTableName = input("Please specify the table you are querying:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
-
-        theMessage = input("Do you want to add something else? [Y/N]")
+        else:
+            theQuery = """SELECT {} FROM {}""".format(theArguments, theTableName)
+            theMessage = input("Do you need a GROUP BY clause? [Y/N]")
+            if theMessage == "Y" or theMessage == "y":
+                theHavingArguments = input("Enter the GROUP BY arguments:\n")
+                theQuery += """GROUP BY {}""".format(theHavingArguments)
+            if theMessage == "Y" or "y":
+                pass
+            elif theMessage == "N" or "n":
+                theMessage = input("Do you want to add a WHERE clause? [Y/N]")
+                if theMessage == "Y" or theMessage == "y":
+                    print("Just add the condition, avoid the WHERE keyword."
+                          "Example ==> a1=b1")
+                    theWhereClause = input("Enter the WHERE clause:\n")
+                    theQuery += """WHERE {}""".format(theWhereClause)
+                else:
+                    pass
+            else:
+                pass
 
     def checkForQuit(self, theTableName):
         return theTableName == "\quit"
