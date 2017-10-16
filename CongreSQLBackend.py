@@ -320,10 +320,6 @@ class SQLQueries:
                 if self.theConnection is not None:
                     self.theConnection.close()
 
-    def deleteRow(self):
-        theRowToDelete = input("Enter ")
-        pass
-
     def dropDatabase(self):
 
         theDBName = input("Enter the database to be dropped:\n")
@@ -564,6 +560,41 @@ class SQLQueries:
                         finally:
                             if self.theConnection is not None:
                                 self.theConnection.close()
+
+                theWhereMessage = input("Do you need to add a WHERE CLAUSE? [Y/N]")
+                if theWhereMessage == 'Y' or theWhereMessage == 'y':
+                    theWhereClause = input("Enter the WHERE CLAUSE:\n")
+                    theQuery = "SELECT {} FROM {} WHERE {}".format(theArguments, theTableName, theWhereClause)
+
+                    try:
+                        self.theCursor.execute(theQuery)
+                        print("Succesful SELECT on table {}"
+                              .format(theTableName))
+
+                        theSelectValues = self.theCursor.fetchall()
+                        theColumns = theArguments.replace(",", "|")
+                        print(theColumns)
+                        for each_item in theSelectValues:
+                            theValues = str(each_item)
+                            print(theValues + "\n")
+
+                        self.theConnection.commit()
+                        theOptions = self.checkForMoreInputs()
+
+                        if theOptions == 'Y' or theOptions == 'y':
+                            self.chooseTheOption()
+
+                    except (Exception, psycopg2.DatabaseError) as theError:
+                        print(self.formatTheError(theError))
+                        theMessage = self.checkForTryAgain()
+                        if theMessage == 'Y' or theMessage == 'y':
+                            self.selectTable()
+                        else:
+                            self.closeApp()
+
+                    finally:
+                        if self.theConnection is not None:
+                            self.theConnection.close()
 
     def checkForTryAgain(self):
         return input(">>Want to try again? [Y/N]")
