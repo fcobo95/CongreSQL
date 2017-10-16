@@ -66,7 +66,7 @@ class SQLQueries:
         self.clearScreen()
 
         print(theMenu)
-        theOption = input(">>>>").replace(" ", "")
+        theOption = input(">>").replace(" ", "")
 
         if theOption == "1":
             self.createDataBase()
