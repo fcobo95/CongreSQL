@@ -54,7 +54,9 @@ class SQLQueries:
 #    4. CREATE INDEX              5. ALTER TABLE            6. ALTER FUNCTION          #
 #    7. ALTER INDEX               8. ALTER KEY              9. UPDATE                  #
 #    10. DELETE                   11. DROP DATABASE         12. DROP TABLE             #
-#    13. TRUNCATE TABLE           14. SELECT                15. QUIT                   #
+#    13. TRUNCATE TABLE           14. SELECT                15. INSERT                 #
+#                                                                                      #
+#                                 16. QUIT                                             #
 #                                                                                      #
 ########################################################################################
                     """
@@ -89,7 +91,9 @@ class SQLQueries:
             self.truncateTable()
         elif theOption == "14":
             self.selectTable()
-        elif theOption == "15" \
+        elif theOption == "15":
+            self.insertValues()
+        elif theOption == "16" \
                 or theOption == "q" \
                 or theOption == "Quit" \
                 or theOption == "quit":
@@ -108,12 +112,12 @@ class SQLQueries:
                 print("Succesful creation of database {}".format(theDBName))
                 self.theCursor.close()
                 self.theConnection.commit()
-                theOptions = input(">>Want to do some other thing? [Y/N]")
-                if theOptions == "Y" or theOptions == "y":
+                theOptions = self.checkForMoreInputs()
+                if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
             except (Exception, psycopg2.DatabaseError) as theError:
                 print(self.formatTheError(theError))
-                theMessage = input(">>Want to try again? [Y/N]")
+                theMessage = self.checkForTryAgain()
                 if theMessage == 'Y' or theMessage == 'y':
                     self.createDataBase()
                 else:
@@ -139,12 +143,12 @@ class SQLQueries:
                 print("Succesful creation of table {}".format(theTableName))
                 self.theCursor.close()
                 self.theConnection.commit()
-                theOptions = input(">>Want to do some other thing? [Y/N]")
-                if theOptions == "Y" or theOptions == "y":
+                theOptions = self.checkForMoreInputs()
+                if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
             except (Exception, psycopg2.DatabaseError) as theError:
                 print(self.formatTheError(theError))
-                theMessage = input(">>Want to try again? [Y/N]")
+                theMessage = self.checkForTryAgain()
                 if theMessage == 'Y' or theMessage == 'y':
                     self.createTable()
                 else:
@@ -175,7 +179,7 @@ class SQLQueries:
         if self.checkForQuit(theColumnName):
             self.chooseTheOption()
 
-        if theMessage == "Y" or "y":
+        if theMessage == 'Y' or 'Y':
             theQuery = """CREATE UNIQUE INDEX {} ON {}({})""".format(theIndexName, theTableName, theColumnName)
             try:
                 self.theCursor.execute(theQuery)
@@ -183,12 +187,12 @@ class SQLQueries:
                       .format(theIndexName, theTableName, theColumnName))
                 self.theCursor.close()
                 self.theConnection.commit()
-                theOptions = input(">>Want to do some other thing? [Y/N]")
-                if theOptions == "Y" or theOptions == "y":
+                theOptions = self.checkForMoreInputs()
+                if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
             except (Exception, psycopg2.DatabaseError) as theError:
                 print(self.formatTheError(theError))
-                theMessage = input(">>Want to try again? [Y/N]")
+                theMessage = self.checkForTryAgain()
                 if theMessage == 'Y' or theMessage == 'y':
                     self.createIndex()
                 else:
@@ -204,12 +208,12 @@ class SQLQueries:
                       .format(theIndexName, theTableName, theColumnName))
                 self.theCursor.close()
                 self.theConnection.commit()
-                theOptions = input(">>Want to do some other thing? [Y/N]")
-                if theOptions == "Y" or theOptions == "y":
+                theOptions = self.checkForMoreInputs()
+                if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
             except (Exception, psycopg2.DatabaseError) as theError:
                 print(self.formatTheError(theError))
-                theMessage = input(">>Want to try again? [Y/N]")
+                theMessage = self.checkForTryAgain()
                 if theMessage == 'Y' or theMessage == 'y':
                     self.createIndex()
                 else:
@@ -253,14 +257,14 @@ class SQLQueries:
                       .format(theTableName))
                 self.theCursor.close()
                 self.theConnection.commit()
-                theOptions = input(">>Want to do some other thing? [Y/N]")
-                if theOptions == "Y" or theOptions == "y":
+                theOptions = self.checkForMoreInputs()
+                if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
             except (Exception, psycopg2.DatabaseError) as theError:
                 print(self.formatTheError(theError))
-                theMessage = input(">>Want to try again? [Y/N]")
+                theMessage = self.checkForTryAgain()
                 if theMessage == 'Y' or theMessage == 'y':
-                    self.createIndex()
+                    self.dropTable()
                 else:
                     self.closeApp()
             finally:
@@ -280,21 +284,55 @@ class SQLQueries:
                       .format(theTableName))
                 self.theCursor.close()
                 self.theConnection.commit()
-                theOptions = input(">>Want to do some other thing? [Y/N]")
-                if theOptions == "Y" or theOptions == "y":
+                theOptions = self.checkForMoreInputs()
+                if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
             except (Exception, psycopg2.DatabaseError) as theError:
                 print(self.formatTheError(theError))
-                theMessage = input(">>Want to try again? [Y/N]")
+                theMessage = self.checkForTryAgain()
                 if theMessage == 'Y' or theMessage == 'y':
-                    self.createIndex()
+                    self.truncateTable()
                 else:
                     self.closeApp()
             finally:
                 if self.theConnection is not None:
                     self.theConnection.close()
 
-    #TODO: STILL NEEDS WORK.
+    def insertValues(self):
+        theTableName = input("Enter the table you are trying to query:\n")
+        if self.checkForQuit(theTableName):
+            self.chooseTheOption()
+
+        theMessage = "Please ignore adding parentheses.\nSeparate the values with commas.\n"
+        print(theMessage)
+        theValues = input("Enter the values:\n")
+        if self.checkForQuit(theValues):
+            self.chooseTheOption()
+        else:
+
+            theQuery = """INSERT INTO {} VALUES({})""".format(theTableName, theValues)
+            try:
+                self.theCursor.execute(theQuery)
+                print("Succesful insert into table {}"
+                      .format(theTableName))
+                self.theConnection.commit()
+                theOptions = self.checkForMoreInserts()
+                if theOptions == 'Y' or theOptions == 'y':
+                    self.insertValues()
+                elif theOptions == 'N' or theOptions == 'n':
+                    self.chooseTheOption()
+            except (Exception, psycopg2.DatabaseError) as theError:
+                print(self.formatTheError(theError))
+                theMessage = self.checkForTryAgain()
+                if theMessage == 'Y' or theMessage == 'y':
+                    self.insertValues()
+                else:
+                    self.closeApp()
+            finally:
+                if self.theConnection is not None:
+                    self.theConnection.close()
+
+    # TODO: STILL NEEDS WORK.
     def selectTable(self):
         theArguments = input("Please enter the table columns you are going to query:\n")
         if self.checkForQuit(theArguments):
@@ -304,24 +342,119 @@ class SQLQueries:
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
         else:
-            theQuery = """SELECT {} FROM {}""".format(theArguments, theTableName)
-            theMessage = input("Do you need a GROUP BY clause? [Y/N]")
-            if theMessage == "Y" or theMessage == "y":
-                theHavingArguments = input("Enter the GROUP BY arguments:\n")
-                theQuery += """GROUP BY {}""".format(theHavingArguments)
-            if theMessage == "Y" or "y":
-                pass
-            elif theMessage == "N" or "n":
-                theMessage = input("Do you want to add a WHERE clause? [Y/N]")
-                if theMessage == "Y" or theMessage == "y":
-                    print("Just add the condition, avoid the WHERE keyword."
-                          "Example ==> a1=b1")
-                    theWhereClause = input("Enter the WHERE clause:\n")
-                    theQuery += """WHERE {}""".format(theWhereClause)
+            theMessage = input("Is this all you are going to query? [Y/N]")
+            if theMessage == 'Y' or theMessage == 'y':
+                theQuery = """SELECT {} FROM {}""".format(theArguments, theTableName)
+                try:
+                    self.theCursor.execute(theQuery)
+                    print("Succesful SELECT on table {}"
+                          .format(theTableName))
+                    theSelectValues = self.theCursor.fetchall()
+                    for each_item in theSelectValues:
+                        theValues = str(each_item)
+                        print(theValues + "\n")
+                    self.theConnection.commit()
+                    theOptions = self.checkForMoreInputs()
+                    if theOptions == 'Y' or theOptions == 'y':
+                        self.chooseTheOption()
+                except (Exception, psycopg2.DatabaseError) as theError:
+                    print(self.formatTheError(theError))
+                    theMessage = self.checkForTryAgain()
+                    if theMessage == 'Y' or theMessage == 'y':
+                        self.selectTable()
+                    else:
+                        self.closeApp()
+                finally:
+                    if self.theConnection is not None:
+                        self.theConnection.close()
+            elif theMessage == 'N' or theMessage == 'n':
+                theJoinMessage = input("Do you need to add a JOIN?")
+                if theJoinMessage == 'Y' or theJoinMessage == 'y':
+                    theJoin = input("Enter the join statement:\n")
+                    theWhereMessage = input("Do you need to add a WHERE CLAUSE? [Y/N]")
+                    if theWhereMessage == 'Y' or theWhereMessage == 'y':
+                        theWhereClause = input("Enter your WHERE CLAUSE STATEMENT:\n")
+                        theQuery = """SELECT {} FROM {} WHERE {}""".format(theArguments, theTableName, theWhereClause)
+                        try:
+                            self.theCursor.execute(theQuery)
+                            print("Succesful SELECT on table {}"
+                                  .format(theTableName))
+                            theSelectValues = self.theCursor.fetchall()
+                            for each_item in theSelectValues:
+                                theValues = str(each_item)
+                                print(theValues + "\n")
+                            self.theConnection.commit()
+                            theOptions = self.checkForMoreInputs()
+                            if theOptions == 'Y' or theOptions == 'y':
+                                self.chooseTheOption()
+                        except (Exception, psycopg2.DatabaseError) as theError:
+                            print(self.formatTheError(theError))
+                            theMessage = self.checkForTryAgain()
+                            if theMessage == 'Y' or theMessage == 'y':
+                                self.selectTable()
+                            else:
+                                self.closeApp()
+                        finally:
+                            if self.theConnection is not None:
+                                self.theConnection.close()
+                    else:
+                        theQuery = """SELECT {} FROM {} JOIN {}""" \
+                            .format(theArguments, theTableName, theJoin)
+                        try:
+                            self.theCursor.execute(theQuery)
+                            print("Succesful SELECT on table {}"
+                                  .format(theTableName))
+                            theSelectValues = self.theCursor.fetchall()
+                            for each_item in theSelectValues:
+                                theValues = str(each_item)
+                                print(theValues + "\n")
+                            self.theConnection.commit()
+                            theOptions = self.checkForMoreInputs()
+                            if theOptions == 'Y' or theOptions == 'y':
+                                self.chooseTheOption()
+                        except (Exception, psycopg2.DatabaseError) as theError:
+                            print(self.formatTheError(theError))
+                            theMessage = self.checkForTryAgain()
+                            if theMessage == 'Y' or theMessage == 'y':
+                                self.selectTable()
+                            else:
+                                self.closeApp()
+                        finally:
+                            if self.theConnection is not None:
+                                self.theConnection.close()
                 else:
-                    pass
-            else:
-                pass
+                    theQuery = """SELECT {} FROM {}""".format(theArguments, theTableName)
+                    try:
+                        self.theCursor.execute(theQuery)
+                        print("Succesful SELECT on table {}"
+                              .format(theTableName))
+                        theSelectValues = self.theCursor.fetchall()
+                        for each_item in theSelectValues:
+                            theValues = str(each_item)
+                            print(theValues + "\n")
+                        self.theConnection.commit()
+                        theOptions = self.checkForMoreInputs()
+                        if theOptions == 'Y' or theOptions == 'y':
+                            self.chooseTheOption()
+                    except (Exception, psycopg2.DatabaseError) as theError:
+                        print(self.formatTheError(theError))
+                        theMessage = self.checkForTryAgain()
+                        if theMessage == 'Y' or theMessage == 'y':
+                            self.selectTable()
+                        else:
+                            self.closeApp()
+                    finally:
+                        if self.theConnection is not None:
+                            self.theConnection.close()
+
+    def checkForTryAgain(self):
+        return input(">>Want to try again? [Y/N]")
+
+    def checkForMoreInputs(self):
+        return input(">>Want to do some other thing? [Y/N]")
+
+    def checkForMoreInserts(self):
+        return input(">>Do you want to insert more values?[Y/N]")
 
     def checkForQuit(self, theTableName):
         return theTableName == "\quit"
