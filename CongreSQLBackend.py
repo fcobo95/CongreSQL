@@ -12,7 +12,7 @@ class SQLQueries:
         self.theReader = Reader.Reader().theReader
 
         try:
-            theUser = input("Enter the role name to login with: ")
+            theUser = input(">>Enter the role name to login with: ")
             thePassword = getpass.getpass("Password for {}: ".format(theUser))
             theHost = self.theReader['host']
             thePort = self.theReader['port']
@@ -112,7 +112,7 @@ class SQLQueries:
 
     def createDataBase(self):
 
-        theDBName = input(">>Enter the new database name: ")
+        theDBName = input(">>Enter the new database name:\n")
         if self.checkForQuit(theDBName):
             self.chooseTheOption()
 
@@ -194,11 +194,11 @@ class SQLQueries:
         if self.checkForQuit(theFunctionName):
             self.chooseTheOption()
 
-        theFunctionParameters = input("Enter the function parameters:\n")
+        theFunctionParameters = input(">>Enter the function parameters:\n")
         if self.checkForQuit(theFunctionParameters):
             self.chooseTheOption()
 
-        theAs = input("Enter the AS option you want:\n")
+        theAs = input(">>Enter the AS option you want:\n")
         if self.checkForQuit(theAs):
             self.chooseTheOption()
 
@@ -240,11 +240,11 @@ class SQLQueries:
 
     def createIndex(self):
 
-        theIndexName = input(">>>>Enter the index name:\n")
+        theIndexName = input(">>Enter the index name:\n")
         if self.checkForQuit(theIndexName):
             self.chooseTheOption()
 
-        theMessage = input(">>Do you want this to be a unique index? [Y/N]")
+        theMessage = input(">>Do you want this to be a unique index? [Y/N]\n")
         if self.checkForQuit(theMessage):
             self.chooseTheOption()
 
@@ -331,7 +331,7 @@ class SQLQueries:
             """
         print(theMenu)
 
-        theOptions = input("Enter option from the menu:\n")
+        theOptions = input(">>Enter option from the menu:\n")
 
         if theOptions == "1":
             self.alterTable()
@@ -355,7 +355,7 @@ class SQLQueries:
             ###########################################
             """
         print(theMenu)
-        theTableOptions = input("Enter the option you want from the menu:\n")
+        theTableOptions = input(">>Enter the option you want from the menu:\n")
         if theTableOptions == "1":
             self.alterOptionsAddColumn()
 
@@ -372,10 +372,10 @@ class SQLQueries:
             self.alterOptionsTableColumn()
 
     def alterRole(self):
-        theRoleName = input("Enter the role name:\n")
+        theRoleName = input(">>Enter the role name:\n")
         if self.checkForQuit(theRoleName):
             self.chooseTheOption()
-        theChange = input("Make sure to enter the proper options. Enter what you want to change:\n")
+        theChange = input(">>Make sure to enter the proper options. Enter what you want to change:\n")
         if self.checkForQuit(theChange):
             self.chooseTheOption()
         theQuery = """ALTER ROLE {} {}""".format(theRoleName, theChange)
@@ -406,10 +406,10 @@ class SQLQueries:
                 self.theConnection.close()
 
     def alterOptionsTableColumn(self):
-        theTableName = input("Enter the new column that you wish to modify:\n")
+        theTableName = input(">>Enter the new column that you wish to modify:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
-        theColumnName = input("Enter the new column's name:\n")
+        theColumnName = input(">>Enter the new column's name:\n")
         if self.checkForQuit(theColumnName):
             self.chooseTheOption()
         theQuery = """ALTER TABLE {} ALTER COLUMN {}""" \
@@ -442,11 +442,11 @@ class SQLQueries:
 
     def alterOptionsDropConstraint(self):
 
-        theTableName = input("Enter the table name that you are trying to query:\n")
+        theTableName = input(">>Enter the table name that you are trying to query:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
 
-        theColumnName = input("Enter the constraint's name you wish to drop:\n")
+        theColumnName = input(">>Enter the constraint's name you wish to drop:\n")
         if self.checkForQuit(theColumnName):
             self.chooseTheOption()
 
@@ -480,11 +480,11 @@ class SQLQueries:
 
     def alterOptionsAddConstraint(self):
 
-        theTableName = input("Enter the name of the table that you wish to alter:\n")
+        theTableName = input(">>Enter the name of the table that you wish to alter:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
 
-        theColumnName = input("Enter the new constraint's name:\n")
+        theColumnName = input(">>Enter the new constraint's name:\n")
         if self.checkForQuit(theColumnName):
             self.chooseTheOption()
 
@@ -519,11 +519,11 @@ class SQLQueries:
 
     def alterOptionsDropColumn(self):
 
-        theTableName = input("Enter the name of the table that you wish to alter:\n")
+        theTableName = input(">>Enter the name of the table that you wish to alter:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
 
-        theColumnName = input("Enter the column name that you wish to drop:\n")
+        theColumnName = input(">>Enter the column name that you wish to drop:\n")
         if self.checkForQuit(theColumnName):
             self.chooseTheOption()
 
@@ -558,11 +558,11 @@ class SQLQueries:
 
     def alterOptionsAddColumn(self):
 
-        theTableName = input("Enter the table that you wish to alter:\n")
+        theTableName = input(">>Enter the table that you wish to alter:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
 
-        theColumnName = input("Enter the new column's name and dataype:\n")
+        theColumnName = input(">>Enter the new column's name and dataype:\n")
         if self.checkForQuit(theColumnName):
             self.chooseTheOption()
 
@@ -597,11 +597,11 @@ class SQLQueries:
 
     def deleteRow(self):
 
-        theTableName = input("Enter the table you will delete records from:\n")
+        theTableName = input(">>Enter the table you will delete records from:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
 
-        theCondition = input("Enter the condition to delete:\n")
+        theCondition = input(">>Enter the condition to delete:\n")
         if self.checkForQuit(theCondition):
             self.chooseTheOption()
 
@@ -635,23 +635,23 @@ class SQLQueries:
 
     def updateTableColumn(self):
 
-        theTableName = input("Enter the table name:\n")
+        theTableName = input(">>Enter the table name:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
 
-        theColumnName = input("Enter the column name you wanto to update:\n")
+        theColumnName = input(">>Enter the column name you wanto to update:\n")
         if self.checkForQuit(theColumnName):
             self.chooseTheOption()
 
         print("Make sure to write the column name and the new value\nFor example ==> plate=123456\n")
 
-        theNewValue = input("Enter the new value:\n")
+        theNewValue = input(">>Enter the new value:\n")
         if self.checkForQuit(theNewValue):
             self.chooseTheOption()
 
         print("Make sure to write the condition to update\nFor example ==> model='accent'\n")
 
-        theCondition = input("Enter the update condition:\n")
+        theCondition = input(">>Enter the update condition:\n")
         if self.checkForQuit(theCondition):
             self.chooseTheOption()
 
@@ -689,7 +689,7 @@ class SQLQueries:
 
     def dropDatabase(self):
 
-        theDBName = input("Enter the database to be dropped:\n")
+        theDBName = input(">>Enter the database to be dropped:\n")
         if self.checkForQuit(theDBName):
             self.chooseTheOption()
 
@@ -724,7 +724,7 @@ class SQLQueries:
 
     def dropTable(self):
 
-        theTableName = input("Enter the name of the table to be dropped:\n")
+        theTableName = input(">>Enter the name of the table to be dropped:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
 
@@ -761,7 +761,7 @@ class SQLQueries:
 
         print("If you are going to truncate various tables, separate them with commas.")
 
-        theTableName = input("Enter the name of the table you wish to truncate:\n")
+        theTableName = input(">>Enter the name of the table you wish to truncate:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
         else:
@@ -795,14 +795,14 @@ class SQLQueries:
 
     def insertValues(self):
 
-        theTableName = input("Enter the table you are trying to query:\n")
+        theTableName = input(">>Enter the table you are trying to query:\n")
         if self.checkForQuit(theTableName):
             self.chooseTheOption()
 
         theMessage = "Please ignore adding parentheses.\nSeparate the values with commas.\n"
         print(theMessage)
 
-        theValues = input("Enter the values:\n")
+        theValues = input(">>Enter the values:\n")
         if self.checkForQuit(theValues):
             self.chooseTheOption()
 
@@ -839,19 +839,19 @@ class SQLQueries:
 
     def selectTable(self):
 
-        theOption = input("Are you going to execute a function? [Y/N]\n")
+        theOption = input(">>Are you going to execute a function? [Y/N]\n")
 
         if theOption == 'N' or theOption == 'n':
-            theArguments = input("Please enter the table columns you are going to query:\n")
+            theArguments = input(">>Please enter the table columns you are going to query:\n")
             if self.checkForQuit(theArguments):
                 self.chooseTheOption()
 
-            theTableName = input("Please specify the table you are querying:\n")
+            theTableName = input(">>Please specify the table you are querying:\n")
             if self.checkForQuit(theTableName):
                 self.chooseTheOption()
 
             else:
-                theMessage = input("Is this all you are going to query? [Y/N]")
+                theMessage = input(">>Is this all you are going to query? [Y/N]\n")
 
                 if theMessage == 'Y' or theMessage == 'y':
                     theQuery = """SELECT {} FROM {}""".format(theArguments, theTableName)
@@ -895,7 +895,7 @@ class SQLQueries:
                     theMessage = "Please make sure to use the ON statement."
                     print(theMessage)
 
-                    theJoinMessage = input("Do you need to add a JOIN?[Y/n]")
+                    theJoinMessage = input(">>Do you need to add a JOIN?[Y/N]\n")
                     if theJoinMessage == 'Y' or theJoinMessage == 'y':
                         theJoinOptionsMenu = \
                             """
@@ -907,7 +907,7 @@ class SQLQueries:
                             """
                         print(theJoinOptionsMenu)
 
-                        theJoinOption = input("Please choose the JOIN type that you want to use:\n")
+                        theJoinOption = input(">>Please choose the JOIN type that you want to use:\n")
                         if theJoinOption == "1":
                             theJoinOption = "LEFT OUTER JOIN"
 
@@ -922,8 +922,8 @@ class SQLQueries:
 
                         else:
                             theJoinOption = "JOIN"
-                        theOtherTable = input("Enter the table you are going to use for the JOIN:\n")
-                        theJoinCondition = input("Enter the JOIN condition:\n")
+                        theOtherTable = input(">>Enter the table you are going to use for the JOIN:\n")
+                        theJoinCondition = input(">>Enter the JOIN condition:\n")
                         theQuery = """SELECT {} FROM {} {} {} ON {}""" \
                             .format(theArguments, theTableName, theJoinOption, theOtherTable, theJoinCondition)
 
@@ -961,10 +961,10 @@ class SQLQueries:
                             if self.theConnection is not None:
                                 self.theConnection.close()
 
-                    theWhereMessage = input("Do you need to add a WHERE CLAUSE? [Y/N]")
+                    theWhereMessage = input(">>Do you need to add a WHERE CLAUSE? [Y/N]\n")
 
                     if theWhereMessage == 'Y' or theWhereMessage == 'y':
-                        theWhereClause = input("Enter the WHERE CLAUSE:\n")
+                        theWhereClause = input(">>Enter the WHERE CLAUSE:\n")
                         theQuery = "SELECT {} FROM {} WHERE {}".format(theArguments, theTableName, theWhereClause)
 
                         try:
@@ -1003,11 +1003,11 @@ class SQLQueries:
 
         elif theOption == 'Y' or theOption == 'y':
 
-            theFunctionName = input("Enter the function name")
+            theFunctionName = input(">>Enter the function name:\n")
             if self.checkForQuit(theFunctionName):
                 self.chooseTheOption()
 
-            theFunctionParameters = input("Enter the function parameter values:\n")
+            theFunctionParameters = input(">>Enter the function parameter values:\n")
             if self.checkForQuit(theFunctionParameters):
                 self.chooseTheOption()
 
@@ -1052,13 +1052,13 @@ class SQLQueries:
                         self.theConnection.close()
 
     def checkForTryAgain(self):
-        return input(">>Want to try again? [Y/N]")
+        return input(">>Want to try again? [Y/N]\n")
 
     def checkForMoreInputs(self):
-        return input(">>Do you want to keep using the app? [Y/N]")
+        return input(">>Do you want to keep using the app? [Y/N]\n")
 
     def checkForMoreInserts(self):
-        return input(">>Do you want to insert more values?[Y/N]")
+        return input(">>Do you want to insert more values?[Y/N]\n")
 
     def checkForQuit(self, theTableName):
         return theTableName == "\quit"
