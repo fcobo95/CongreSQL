@@ -53,13 +53,12 @@ class SQLQueries:
 #                             |_|  |_| \___||_| |_| \__,_|                             #
 ########################################################################################
 #                                                                                      #
-#    1. CREATE DATABASE           2. CREATE TABLE           3. CREATE FUNCTION         #
-#    4. CREATE INDEX              5. ALTER TABLE            6. ALTER FUNCTION          #
-#    7. ALTER INDEX               8. ALTER KEY              9. UPDATE                  #
-#    10. DELETE                   11. DROP DATABASE         12. DROP TABLE             #
-#    13. TRUNCATE TABLE           14. SELECT                15. INSERT                 #
+#    1.  CREATE DATABASE          2.  CREATE TABLE           3. CREATE FUNCTION        #
+#    4.  CREATE INDEX             5.  ALTER                  6. UPDATE                 #
+#    7.  DELETE                   8.  DROP DATABASE          9. DROP TABLE             #
+#    10. TRUNCATE TABLE           11. SELECT                12. INSERT                 #
 #                                                                                      #
-#                                 16. QUIT                                             #
+#                                 13. QUIT                                             #
 #                                                                                      #
 ########################################################################################
                     """
@@ -84,36 +83,27 @@ class SQLQueries:
             self.alterTable()
 
         elif theOption == "6":
-            self.alterFunction()
-
-        elif theOption == "7":
-            self.alterIndex()
-
-        elif theOption == "8":
-            self.alterKeys()
-
-        elif theOption == "9":
             self.updateTableColumn()
 
-        elif theOption == "10":
+        elif theOption == "7":
             self.deleteRow()
 
-        elif theOption == "11":
+        elif theOption == "8":
             self.dropDatabase()
 
-        elif theOption == "12":
+        elif theOption == "9":
             self.dropTable()
 
-        elif theOption == "13":
+        elif theOption == "10":
             self.truncateTable()
 
-        elif theOption == "14":
+        elif theOption == "11":
             self.selectTable()
 
-        elif theOption == "15":
+        elif theOption == "12":
             self.insertValues()
 
-        elif theOption == "16" \
+        elif theOption == "13" \
                 or theOption == "q" \
                 or theOption == "Quit" \
                 or theOption == "quit":
@@ -329,23 +319,99 @@ class SQLQueries:
 
     # TODO
     def alterTable(self):
+        theMenu = \
+            """
+            ###########################################
+            #+++++++++++++++++++++++++++++++++++++++++#
+            #+ Please choose an option from the menu +#
+            #+++++++++++++++++++++++++++++++++++++++++#
+            ###########################################
+            ## 1. TABLE                              ##
+            ## 2. ROLE                               ##
+            ## 3. USER                               ##
+            ## 4. FUNCTION                           ##
+            ###########################################
+            """
+        print(theMenu)
 
-        pass
+        theOptions = input("Enter option from the menu:\n")
 
-    # TODO
-    def alterFunction(self):
+        if theOptions == "1":
+            theMenu = \
+                """
+                ###########################################
+                #+++++++++++++++++++++++++++++++++++++++++#
+                #+ Please choose an option from the menu +#
+                #+++++++++++++++++++++++++++++++++++++++++#
+                ###########################################
+                ## 1. ADD COLUMN                         ##
+                ## 2. DROP COLUMN                        ##
+                ## 3. ADD CONSTRAINT                     ##
+                ## 4. DROP CONSTRAINT                    ##
+                ## 5. ALTER COLUMN                       ##
+                ###########################################
+                """
+            print(theMenu)
+            theTableOptions = input("Enter the option you want from the menu:\n")
 
-        pass
+            if theTableOptions == "1":
 
-    # TODO
-    def alterIndex(self):
+                theTableName = input("Enter the new column that you wish to enter:\n")
+                if self.checkForQuit(theTableName):
+                    self.chooseTheOption()
 
-        pass
+                theColumnName = input("Enter the new column's name:\n")
+                if self.checkForQuit(theColumnName):
+                    self.chooseTheOption()
 
-    # TODO
-    def alterKeys(self):
+                theQuery = """ALTER TABLE {} ADD COLUMN {}""" \
+                    .format(theTableName, theColumnName)
+                try:
+                    self.theCursor.execute(theQuery)
+                    print("Succesful alter of table {}"
+                          .format(theTableName))
 
-        pass
+                    self.theConnection.commit()
+
+                    theOptions = self.checkForMoreInputs()
+
+                    if theOptions == 'Y' or theOptions == 'y':
+                        self.chooseTheOption()
+
+                except (Exception, psycopg2.DatabaseError) as theError:
+                    print(self.formatTheError(theError))
+
+                    theMessage = self.checkForTryAgain()
+                    if theMessage == 'Y' or theMessage == 'y':
+                        self.createIndex()
+
+                    else:
+                        self.closeApp()
+
+                finally:
+                    if self.theConnection is not None:
+                        self.theConnection.close()
+
+            elif theTableOptions == "2":
+                pass
+
+            elif theTableOptions == "3":
+                pass
+
+            elif theTableOptions == "4":
+                pass
+
+            elif theTableOptions == "5":
+                pass
+
+        elif theOptions == "2":
+            pass
+
+        elif theOptions == "3":
+            pass
+
+        elif theOptions == "4":
+            pass
 
     # TODO
     def deleteRow(self):
