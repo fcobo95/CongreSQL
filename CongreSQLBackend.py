@@ -595,10 +595,43 @@ class SQLQueries:
             if self.theConnection is not None:
                 self.theConnection.close()
 
-    # TODO
     def deleteRow(self):
 
-        pass
+        theTableName = input("Enter the table you will delete records from:\n")
+        if self.checkForQuit(theTableName):
+            self.chooseTheOption()
+
+        theCondition = input("Enter the condition to delete:\n")
+        if self.checkForQuit(theCondition):
+            self.chooseTheOption()
+
+        theQuery = """DELETE FROM {} WHERE {}""".format(theTableName, theCondition)
+
+        try:
+            self.theCursor.execute(theQuery)
+            print("Succesful deletion in table {}"
+                  .format(theTableName))
+
+            self.theConnection.commit()
+
+            theOptions = self.checkForMoreInputs()
+
+            if theOptions == 'Y' or theOptions == 'y':
+                self.chooseTheOption()
+
+        except (Exception, psycopg2.DatabaseError) as theError:
+            print(self.formatTheError(theError))
+
+            theMessage = self.checkForTryAgain()
+            if theMessage == 'Y' or theMessage == 'y':
+                self.deleteRow()
+
+            else:
+                self.closeApp()
+
+        finally:
+            if self.theConnection is not None:
+                self.theConnection.close()
 
     def updateTableColumn(self):
 
@@ -804,7 +837,6 @@ class SQLQueries:
                 if self.theConnection is not None:
                     self.theConnection.close()
 
-    # TODO: STILL NEEDS WORK.
     def selectTable(self):
 
         theOption = input("Are you going to execute a function? [Y/N]\n")
