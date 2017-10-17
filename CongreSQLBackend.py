@@ -12,7 +12,7 @@ class SQLQueries:
         self.theReader = Reader.Reader().theReader
 
         try:
-            theUser = self.theReader['user']
+            theUser = input("Enter the role name to login with: ")
             thePassword = getpass.getpass("Password for {}: ".format(theUser))
             theHost = self.theReader['host']
             thePort = self.theReader['port']
@@ -327,8 +327,6 @@ class SQLQueries:
             ###########################################
             ## 1. TABLE                              ##
             ## 2. ROLE                               ##
-            ## 3. USER                               ##
-            ## 4. FUNCTION                           ##
             ###########################################
             """
         print(theMenu)
@@ -336,46 +334,76 @@ class SQLQueries:
         theOptions = input("Enter option from the menu:\n")
 
         if theOptions == "1":
-            theMenu = \
-                """
-                ###########################################
-                #+++++++++++++++++++++++++++++++++++++++++#
-                #+ Please choose an option from the menu +#
-                #+++++++++++++++++++++++++++++++++++++++++#
-                ###########################################
-                ## 1. ADD COLUMN                         ##
-                ## 2. DROP COLUMN                        ##
-                ## 3. ADD CONSTRAINT                     ##
-                ## 4. DROP CONSTRAINT                    ##
-                ## 5. ALTER COLUMN                       ##
-                ###########################################
-                """
-            print(theMenu)
-            theTableOptions = input("Enter the option you want from the menu:\n")
-
-            if theTableOptions == "1":
-                self.alterOptionsAddColumn()
-
-            elif theTableOptions == "2":
-                self.alterOptionsDropColumn()
-
-            elif theTableOptions == "3":
-                self.alterOptionsAddConstraint()
-
-            elif theTableOptions == "4":
-                self.alterOptionsDropConstraint()
-
-            elif theTableOptions == "5":
-                self.alterOptionsTableColumn()
+            self.alterTable()
 
         elif theOptions == "2":
-            pass
+            self.alterRole()
 
-        elif theOptions == "3":
-            pass
+    def alterTable(self):
+        theMenu = \
+            """
+            ###########################################
+            #+++++++++++++++++++++++++++++++++++++++++#
+            #+ Please choose an option from the menu +#
+            #+++++++++++++++++++++++++++++++++++++++++#
+            ###########################################
+            ## 1. ADD COLUMN                         ##
+            ## 2. DROP COLUMN                        ##
+            ## 3. ADD CONSTRAINT                     ##
+            ## 4. DROP CONSTRAINT                    ##
+            ## 5. ALTER COLUMN                       ##
+            ###########################################
+            """
+        print(theMenu)
+        theTableOptions = input("Enter the option you want from the menu:\n")
+        if theTableOptions == "1":
+            self.alterOptionsAddColumn()
 
-        elif theOptions == "4":
-            pass
+        elif theTableOptions == "2":
+            self.alterOptionsDropColumn()
+
+        elif theTableOptions == "3":
+            self.alterOptionsAddConstraint()
+
+        elif theTableOptions == "4":
+            self.alterOptionsDropConstraint()
+
+        elif theTableOptions == "5":
+            self.alterOptionsTableColumn()
+
+    def alterRole(self):
+        theRoleName = input("Enter the role name:\n")
+        if self.checkForQuit(theRoleName):
+            self.chooseTheOption()
+        theChange = input("Make sure to enter the proper options. Enter what you want to change:\n")
+        if self.checkForQuit(theChange):
+            self.chooseTheOption()
+        theQuery = """ALTER ROLE {} {}""".format(theRoleName, theChange)
+        try:
+            self.theCursor.execute(theQuery)
+            print("Succesful alter of role {}"
+                  .format(theRoleName))
+
+            self.theConnection.commit()
+
+            theOptions = self.checkForMoreInputs()
+
+            if theOptions == 'Y' or theOptions == 'y':
+                self.chooseTheOption()
+
+        except (Exception, psycopg2.DatabaseError) as theError:
+            print(self.formatTheError(theError))
+
+            theMessage = self.checkForTryAgain()
+            if theMessage == 'Y' or theMessage == 'y':
+                self.alterRole()
+
+            else:
+                self.closeApp()
+
+        finally:
+            if self.theConnection is not None:
+                self.theConnection.close()
 
     def alterOptionsTableColumn(self):
         theTableName = input("Enter the new column that you wish to modify:\n")
