@@ -132,7 +132,6 @@ class SQLQueries:
             try:
                 self.theCursor.execute(theQuery)
                 print("Succesful creation of database {}".format(theDBName))
-                self.theCursor.close()
                 self.theConnection.commit()
                 theOptions = self.checkForMoreInputs()
                 if theOptions == 'Y' or theOptions == 'y':
@@ -148,7 +147,7 @@ class SQLQueries:
 
             finally:
                 if self.theConnection is not None:
-                    self.theCursor.close()
+                    self.theConnection.close()
 
     def createTable(self):
 
@@ -166,7 +165,6 @@ class SQLQueries:
             try:
                 self.theCursor.execute(theQuery)
                 print("Succesful creation of table {}".format(theTableName))
-                self.theCursor.close()
                 self.theConnection.commit()
                 theOptions = self.checkForMoreInputs()
                 if theOptions == 'Y' or theOptions == 'y':
@@ -215,7 +213,6 @@ class SQLQueries:
                 self.theCursor.execute(theQuery)
                 print("Succesful creation of index {} on table {}, column {}"
                       .format(theIndexName, theTableName, theColumnName))
-                self.theCursor.close()
                 self.theConnection.commit()
                 theOptions = self.checkForMoreInputs()
                 if theOptions == 'Y' or theOptions == 'y':
@@ -238,7 +235,6 @@ class SQLQueries:
                 self.theCursor.execute(theQuery)
                 print("Succesful creation of index {} on table {}, column {}"
                       .format(theIndexName, theTableName, theColumnName))
-                self.theCursor.close()
                 self.theConnection.commit()
                 theOptions = self.checkForMoreInputs()
                 if theOptions == 'Y' or theOptions == 'y':
@@ -274,6 +270,9 @@ class SQLQueries:
 
         pass
 
+    def deleteRow(self):
+        pass
+
     def updateTableColumn(self):
 
         theTableName = input("Enter the table name:\n")
@@ -302,7 +301,6 @@ class SQLQueries:
                 print("Succesful update table {} column {}"
                       .format(theTableName, theColumnName))
                 print("The new value is {}".format(theNewValue))
-                self.theCursor.close()
                 self.theConnection.commit()
                 theOptions = self.checkForMoreInputs()
                 if theOptions == 'Y' or theOptions == 'y':
@@ -332,7 +330,6 @@ class SQLQueries:
                 self.theCursor.execute(theQuery)
                 print("Succesful dropping table {}"
                       .format(theDBName))
-                self.theCursor.close()
                 self.theConnection.commit()
                 theOptions = self.checkForMoreInputs()
                 if theOptions == 'Y' or theOptions == 'y':
@@ -362,7 +359,6 @@ class SQLQueries:
                 self.theCursor.execute(theQuery)
                 print("Succesful dropping table {}"
                       .format(theTableName))
-                self.theCursor.close()
                 self.theConnection.commit()
                 theOptions = self.checkForMoreInputs()
                 if theOptions == 'Y' or theOptions == 'y':
@@ -393,7 +389,6 @@ class SQLQueries:
                 self.theCursor.execute(theQuery)
                 print("Succesful truncation on table {}"
                       .format(theTableName))
-                self.theCursor.close()
                 self.theConnection.commit()
                 theOptions = self.checkForMoreInputs()
                 if theOptions == 'Y' or theOptions == 'y':
@@ -468,12 +463,13 @@ class SQLQueries:
                     print("Succesful SELECT on table {}"
                           .format(theTableName))
                     theSelectValues = self.theCursor.fetchall()
-
-                    theColumns = theArguments.replace(",", "|")
+                    theColumns = theArguments.replace(",", " | ")
                     print(theColumns)
+                    print("++++++++++++++++++++++++++++++++++++++")
                     for each_item in theSelectValues:
                         theValues = str(each_item)
-                        print(theValues + "\n")
+                        theValue = str(theValues).replace("(", "").replace(")", "").replace(",", " | ")
+                        print(theValue + "\n")
                     self.theConnection.commit()
                     theOptions = self.checkForMoreInputs()
                     if theOptions == 'Y' or theOptions == 'y':
@@ -491,75 +487,43 @@ class SQLQueries:
                     if self.theConnection is not None:
                         self.theConnection.close()
             elif theMessage == 'N' or theMessage == 'n':
-                theJoinMessage = input("Do you need to add a JOIN?")
+                theMessage = "Please make sure to use the ON statement."
+                print(theMessage)
+                theJoinMessage = input("Do you need to add a JOIN?[Y/n]")
                 if theJoinMessage == 'Y' or theJoinMessage == 'y':
-                    theJoin = input("Enter the join statement:\n")
-                    theWhereMessage = input("Do you need to add a WHERE CLAUSE? [Y/N]")
-                    if theWhereMessage == 'Y' or theWhereMessage == 'y':
-                        theWhereClause = input("Enter your WHERE CLAUSE STATEMENT:\n")
-                        theQuery = """SELECT {} FROM {} WHERE {}""".format(theArguments, theTableName, theWhereClause)
+                    theJoin = input("Enter the JOIN statement. Make sure to use ON statement as well:\n")
+                    theQuery = """SELECT {} FROM {} JOIN {}""" \
+                        .format(theArguments, theTableName, theJoin)
 
-                        try:
-                            self.theCursor.execute(theQuery)
-                            print("Succesful SELECT on table {}"
-                                  .format(theTableName))
+                    try:
+                        self.theCursor.execute(theQuery)
+                        print("Succesful SELECT on table {}"
+                              .format(theTableName))
 
-                            theSelectValues = self.theCursor.fetchall()
+                        theSelectValues = self.theCursor.fetchall()
+                        theColumns = theArguments.replace(",", " | ")
+                        print(theColumns)
+                        for each_item in theSelectValues:
+                            theValues = str(each_item)
+                            print(theValues + "\n")
 
-                            theColumns = theArguments.replace(",", "|")
-                            print(theColumns)
-                            for each_item in theSelectValues:
-                                theValues = str(each_item)
-                                print(theValues + "\n")
-                            self.theConnection.commit()
-                            theOptions = self.checkForMoreInputs()
-                            if theOptions == 'Y' or theOptions == 'y':
-                                self.chooseTheOption()
+                        self.theConnection.commit()
+                        theOptions = self.checkForMoreInputs()
 
-                        except (Exception, psycopg2.DatabaseError) as theError:
-                            print(self.formatTheError(theError))
-                            theMessage = self.checkForTryAgain()
-                            if theMessage == 'Y' or theMessage == 'y':
-                                self.selectTable()
-                            else:
-                                self.closeApp()
+                        if theOptions == 'Y' or theOptions == 'y':
+                            self.chooseTheOption()
 
-                        finally:
-                            if self.theConnection is not None:
-                                self.theConnection.close()
-                    else:
-                        theQuery = """SELECT {} FROM {} JOIN {}""" \
-                            .format(theArguments, theTableName, theJoin)
+                    except (Exception, psycopg2.DatabaseError) as theError:
+                        print(self.formatTheError(theError))
+                        theMessage = self.checkForTryAgain()
+                        if theMessage == 'Y' or theMessage == 'y':
+                            self.selectTable()
+                        else:
+                            self.closeApp()
 
-                        try:
-                            self.theCursor.execute(theQuery)
-                            print("Succesful SELECT on table {}"
-                                  .format(theTableName))
-
-                            theSelectValues = self.theCursor.fetchall()
-                            theColumns = theArguments.replace(",", "|")
-                            print(theColumns)
-                            for each_item in theSelectValues:
-                                theValues = str(each_item)
-                                print(theValues + "\n")
-
-                            self.theConnection.commit()
-                            theOptions = self.checkForMoreInputs()
-
-                            if theOptions == 'Y' or theOptions == 'y':
-                                self.chooseTheOption()
-
-                        except (Exception, psycopg2.DatabaseError) as theError:
-                            print(self.formatTheError(theError))
-                            theMessage = self.checkForTryAgain()
-                            if theMessage == 'Y' or theMessage == 'y':
-                                self.selectTable()
-                            else:
-                                self.closeApp()
-
-                        finally:
-                            if self.theConnection is not None:
-                                self.theConnection.close()
+                    finally:
+                        if self.theConnection is not None:
+                            self.theConnection.close()
 
                 theWhereMessage = input("Do you need to add a WHERE CLAUSE? [Y/N]")
                 if theWhereMessage == 'Y' or theWhereMessage == 'y':
@@ -572,7 +536,7 @@ class SQLQueries:
                               .format(theTableName))
 
                         theSelectValues = self.theCursor.fetchall()
-                        theColumns = theArguments.replace(",", "|")
+                        theColumns = theArguments.replace(",", " | ")
                         print(theColumns)
                         for each_item in theSelectValues:
                             theValues = str(each_item)
@@ -600,7 +564,7 @@ class SQLQueries:
         return input(">>Want to try again? [Y/N]")
 
     def checkForMoreInputs(self):
-        return input(">>Want to do some other thing? [Y/N]")
+        return input(">>Do you want to keep using the app? [Y/N]")
 
     def checkForMoreInserts(self):
         return input(">>Do you want to insert more values?[Y/N]")
