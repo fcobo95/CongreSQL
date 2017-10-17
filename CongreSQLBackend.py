@@ -80,7 +80,7 @@ class SQLQueries:
             self.createIndex()
 
         elif theOption == "5":
-            self.alterTable()
+            self.alterOptions()
 
         elif theOption == "6":
             self.updateTableColumn()
@@ -317,8 +317,7 @@ class SQLQueries:
         else:
             print("Invalid option!")
 
-    # TODO
-    def alterTable(self):
+    def alterOptions(self):
         theMenu = \
             """
             ###########################################
@@ -355,54 +354,19 @@ class SQLQueries:
             theTableOptions = input("Enter the option you want from the menu:\n")
 
             if theTableOptions == "1":
-
-                theTableName = input("Enter the new column that you wish to enter:\n")
-                if self.checkForQuit(theTableName):
-                    self.chooseTheOption()
-
-                theColumnName = input("Enter the new column's name:\n")
-                if self.checkForQuit(theColumnName):
-                    self.chooseTheOption()
-
-                theQuery = """ALTER TABLE {} ADD COLUMN {}""" \
-                    .format(theTableName, theColumnName)
-                try:
-                    self.theCursor.execute(theQuery)
-                    print("Succesful alter of table {}"
-                          .format(theTableName))
-
-                    self.theConnection.commit()
-
-                    theOptions = self.checkForMoreInputs()
-
-                    if theOptions == 'Y' or theOptions == 'y':
-                        self.chooseTheOption()
-
-                except (Exception, psycopg2.DatabaseError) as theError:
-                    print(self.formatTheError(theError))
-
-                    theMessage = self.checkForTryAgain()
-                    if theMessage == 'Y' or theMessage == 'y':
-                        self.createIndex()
-
-                    else:
-                        self.closeApp()
-
-                finally:
-                    if self.theConnection is not None:
-                        self.theConnection.close()
+                self.alterOptionsAddColumn()
 
             elif theTableOptions == "2":
-                pass
+                self.alterOptionsDropColumn()
 
             elif theTableOptions == "3":
-                pass
+                self.alterOptionsAddConstraint()
 
             elif theTableOptions == "4":
-                pass
+                self.alterOptionsDropConstraint()
 
             elif theTableOptions == "5":
-                pass
+                self.alterOptionsTableColumn()
 
         elif theOptions == "2":
             pass
@@ -412,6 +376,196 @@ class SQLQueries:
 
         elif theOptions == "4":
             pass
+
+    def alterOptionsTableColumn(self):
+        theTableName = input("Enter the new column that you wish to modify:\n")
+        if self.checkForQuit(theTableName):
+            self.chooseTheOption()
+        theColumnName = input("Enter the new column's name:\n")
+        if self.checkForQuit(theColumnName):
+            self.chooseTheOption()
+        theQuery = """ALTER TABLE {} ALTER COLUMN {}""" \
+            .format(theTableName, theColumnName)
+        try:
+            self.theCursor.execute(theQuery)
+            print("Succesful alter of table {}"
+                  .format(theTableName))
+
+            self.theConnection.commit()
+
+            theOptions = self.checkForMoreInputs()
+
+            if theOptions == 'Y' or theOptions == 'y':
+                self.chooseTheOption()
+
+        except (Exception, psycopg2.DatabaseError) as theError:
+            print(self.formatTheError(theError))
+
+            theMessage = self.checkForTryAgain()
+            if theMessage == 'Y' or theMessage == 'y':
+                self.alterOptionsTableColumn()
+
+            else:
+                self.closeApp()
+
+        finally:
+            if self.theConnection is not None:
+                self.theConnection.close()
+
+    def alterOptionsDropConstraint(self):
+
+        theTableName = input("Enter the table name that you are trying to query:\n")
+        if self.checkForQuit(theTableName):
+            self.chooseTheOption()
+
+        theColumnName = input("Enter the constraint's name you wish to drop:\n")
+        if self.checkForQuit(theColumnName):
+            self.chooseTheOption()
+
+        theQuery = """ALTER TABLE {} DROP CONSTRAINT {}""" \
+            .format(theTableName, theColumnName)
+        try:
+            self.theCursor.execute(theQuery)
+            print("Succesful alter of table {}"
+                  .format(theTableName))
+
+            self.theConnection.commit()
+
+            theOptions = self.checkForMoreInputs()
+
+            if theOptions == 'Y' or theOptions == 'y':
+                self.chooseTheOption()
+
+        except (Exception, psycopg2.DatabaseError) as theError:
+            print(self.formatTheError(theError))
+
+            theMessage = self.checkForTryAgain()
+            if theMessage == 'Y' or theMessage == 'y':
+                self.alterOptionsDropConstraint()
+
+            else:
+                self.closeApp()
+
+        finally:
+            if self.theConnection is not None:
+                self.theConnection.close()
+
+    def alterOptionsAddConstraint(self):
+
+        theTableName = input("Enter the name of the table that you wish to alter:\n")
+        if self.checkForQuit(theTableName):
+            self.chooseTheOption()
+
+        theColumnName = input("Enter the new constraint's name:\n")
+        if self.checkForQuit(theColumnName):
+            self.chooseTheOption()
+
+        theQuery = """ALTER TABLE {} ADD CONSTRAINT {}""" \
+            .format(theTableName, theColumnName)
+
+        try:
+            self.theCursor.execute(theQuery)
+            print("Succesful alter of table {}"
+                  .format(theTableName))
+
+            self.theConnection.commit()
+
+            theOptions = self.checkForMoreInputs()
+
+            if theOptions == 'Y' or theOptions == 'y':
+                self.chooseTheOption()
+
+        except (Exception, psycopg2.DatabaseError) as theError:
+            print(self.formatTheError(theError))
+
+            theMessage = self.checkForTryAgain()
+            if theMessage == 'Y' or theMessage == 'y':
+                self.alterOptionsAddConstraint()
+
+            else:
+                self.closeApp()
+
+        finally:
+            if self.theConnection is not None:
+                self.theConnection.close()
+
+    def alterOptionsDropColumn(self):
+
+        theTableName = input("Enter the name of the table that you wish to alter:\n")
+        if self.checkForQuit(theTableName):
+            self.chooseTheOption()
+
+        theColumnName = input("Enter the column name that you wish to drop:\n")
+        if self.checkForQuit(theColumnName):
+            self.chooseTheOption()
+
+        theQuery = """ALTER TABLE {} DROP COLUMN {}""" \
+            .format(theTableName, theColumnName)
+
+        try:
+            self.theCursor.execute(theQuery)
+            print("Succesful alter of table {}"
+                  .format(theTableName))
+
+            self.theConnection.commit()
+
+            theOptions = self.checkForMoreInputs()
+
+            if theOptions == 'Y' or theOptions == 'y':
+                self.chooseTheOption()
+
+        except (Exception, psycopg2.DatabaseError) as theError:
+            print(self.formatTheError(theError))
+
+            theMessage = self.checkForTryAgain()
+            if theMessage == 'Y' or theMessage == 'y':
+                self.alterOptionsDropColumn()
+
+            else:
+                self.closeApp()
+
+        finally:
+            if self.theConnection is not None:
+                self.theConnection.close()
+
+    def alterOptionsAddColumn(self):
+
+        theTableName = input("Enter the table that you wish to alter:\n")
+        if self.checkForQuit(theTableName):
+            self.chooseTheOption()
+
+        theColumnName = input("Enter the new column's name and dataype:\n")
+        if self.checkForQuit(theColumnName):
+            self.chooseTheOption()
+
+        theQuery = """ALTER TABLE {} ADD COLUMN {}""" \
+            .format(theTableName, theColumnName)
+
+        try:
+            self.theCursor.execute(theQuery)
+            print("Succesful alter of table {}"
+                  .format(theTableName))
+
+            self.theConnection.commit()
+
+            theOptions = self.checkForMoreInputs()
+
+            if theOptions == 'Y' or theOptions == 'y':
+                self.chooseTheOption()
+
+        except (Exception, psycopg2.DatabaseError) as theError:
+            print(self.formatTheError(theError))
+
+            theMessage = self.checkForTryAgain()
+            if theMessage == 'Y' or theMessage == 'y':
+                self.alterOptionsAddColumn()
+
+            else:
+                self.closeApp()
+
+        finally:
+            if self.theConnection is not None:
+                self.theConnection.close()
 
     # TODO
     def deleteRow(self):
