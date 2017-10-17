@@ -254,23 +254,29 @@ class SQLQueries:
         else:
             print("Invalid option!")
 
+    # TODO
     def alterTable(self):
 
         pass
 
+    # TODO
     def alterFunction(self):
 
         pass
 
+    # TODO
     def alterIndex(self):
 
         pass
 
+    # TODO
     def alterKeys(self):
 
         pass
 
+    # TODO
     def deleteRow(self):
+
         pass
 
     def updateTableColumn(self):
@@ -491,9 +497,30 @@ class SQLQueries:
                 print(theMessage)
                 theJoinMessage = input("Do you need to add a JOIN?[Y/n]")
                 if theJoinMessage == 'Y' or theJoinMessage == 'y':
-                    theJoin = input("Enter the JOIN statement. Make sure to use ON statement as well:\n")
-                    theQuery = """SELECT {} FROM {} JOIN {}""" \
-                        .format(theArguments, theTableName, theJoin)
+                    theJoinOptionsMenu = \
+                        """
+                        1. LEFT JOIN
+                        2. INNER JOIN
+                        3. RIGHT JOIN
+                        4. FULL OUTER JOIN
+                        5. JOIN
+                        """
+                    print(theJoinOptionsMenu)
+                    theJoinOption = input("Please choose the JOIN type that you want to use:\n")
+                    if theJoinOption == "1":
+                        theJoinOption = "LEFT OUTER JOIN"
+                    elif theJoinOption == "2":
+                        theJoinOption = "INNER JOIN"
+                    elif theJoinOption == "3":
+                        theJoinOption = "RIGHT JOIN"
+                    elif theJoinOption == "4":
+                        theJoinOption = "FULL OUTER JOIN"
+                    else:
+                        theJoinOption = "JOIN"
+                    theOtherTable = input("Enter the table you are going to use for the JOIN:\n")
+                    theJoinCondition = input("Enter the JOIN condition:\n")
+                    theQuery = """SELECT {} FROM {} {} {} ON {}""" \
+                        .format(theArguments, theTableName, theJoinOption, theOtherTable, theJoinCondition)
 
                     try:
                         self.theCursor.execute(theQuery)
