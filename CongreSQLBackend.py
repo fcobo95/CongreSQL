@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import sys
 import Reader
 import os
@@ -26,6 +27,7 @@ class SQLQueries:
                     .format(theUser, thePassword, theHost, thePort))
             self.theConnection = psycopg2.connect(theConnectionString)
             self.theCursor = self.theConnection.cursor()
+            self.theConnection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -119,6 +121,7 @@ class SQLQueries:
         else:
             theQuery = """CREATE DATABASE {}""" \
                 .format(theDBName)
+            print(theQuery)
 
             try:
                 self.theCursor.execute(theQuery)
