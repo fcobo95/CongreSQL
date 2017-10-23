@@ -13,18 +13,25 @@ class SQLQueries:
         self.theReader = Reader.Reader().theReader
 
         try:
-            theUser = input(">>Enter the role name to login with: ")
-            thePassword = getpass.getpass("Password for {}: ".format(theUser))
-            theHost = self.theReader['host']
+            theUser = input(">>Enter the role name to login with:\n")
+            thePassword = getpass.getpass(">>Password for {}: ".format(theUser))
+            print("For Remote type R or r and for Local type L or l")
+            remoteOrLocal = input(">>Are you connecting to a local databse or remote one? [R/L]")
+            if remoteOrLocal == "L" or remoteOrLocal == "l":
+                theHost = self.theReader['host']
+            else:
+                theHost = input("Please enter the ip address for the remote DB:\n")
             thePort = self.theReader['port']
+            theDBName = input(">>Enter the database you want to connect to:\n")
             theConnectionString = str(
                 """
                 user={}
                 password={}
                 host={}
                 port={}
+                dbname={}
                 """
-                    .format(theUser, thePassword, theHost, thePort))
+                    .format(theUser, thePassword, theHost, thePort, theDBName))
             self.theConnection = psycopg2.connect(theConnectionString)
             self.theCursor = self.theConnection.cursor()
             self.theConnection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
