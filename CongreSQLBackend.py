@@ -1172,6 +1172,7 @@ class SQLQueries:
                                                   .format(theRoleName))
         if theRolePassword == theRolePassConfirmation:
             print("Passwords match.")
+
         else:
             print("Password doesn't match.")
             self.createRolePassword(theRoleName)
