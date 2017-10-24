@@ -68,7 +68,9 @@ class SQLQueries:
 #    7.  DELETE                   8.  DROP DATABASE          9. DROP TABLE             #
 #    10. TRUNCATE TABLE           11. SELECT                12. INSERT                 #
 #                                                                                      #
-#                                 13. QUIT                                             #
+#                                 13. CREATE ROLE                                      #
+#                                                                                      #
+#                                 14. QUIT                                             #
 #                                                                                      #
 ########################################################################################
                     """
@@ -113,7 +115,10 @@ class SQLQueries:
         elif theOption == "12":
             self.insertValues()
 
-        elif theOption == "13" \
+        elif theOption == "13":
+            self.createRole()
+
+        elif theOption == "14" \
                 or theOption == "q" \
                 or theOption == "Quit" \
                 or theOption == "quit":
@@ -1061,6 +1066,115 @@ class SQLQueries:
                 finally:
                     if self.theConnection is not None:
                         self.theConnection.close()
+
+    def createRole(self):
+
+        theWithOption = ""
+
+        theRoleName = input("Enter the new Role name:\n")
+        if self.checkForQuit(theRoleName):
+            self.chooseTheOption()
+
+        self.createRolePassword(theRoleName)
+
+        theLoginPerm = input(">>Do you want this role to be able to login at all? [Y/N]\n")
+        if self.checkForQuit(theLoginPerm):
+            self.chooseTheOption()
+        else:
+            if theLoginPerm == 'Y' or theLoginPerm == 'y':
+                theWithOption += "LOGIN "
+            else:
+                theWithOption += "NOLOGIN "
+
+        theCreateDBPerm = input(">>Do you want this role to be able to create databases? [Y/N]\n")
+        if self.checkForQuit(theCreateDBPerm):
+            self.chooseTheOption()
+        else:
+            if theCreateDBPerm == 'Y' or theCreateDBPerm == 'y':
+                theWithOption += "CREATEDB "
+            else:
+                theWithOption += "NOCREATEDB "
+
+        theCreateRolePerm = input(">>Will this role be able to create other roles? [Y/N]\n")
+        if self.checkForQuit(theCreateRolePerm):
+            self.chooseTheOption()
+        else:
+            if theCreateRolePerm == 'Y' or theCreateRolePerm == 'y':
+                theWithOption += "CREATEROLE "
+            else:
+                theWithOption += "NOCREATEROLE "
+
+        theSUPerm = input(">>Will this role be granted super user privileges? [Y/N]\n")
+        if self.checkForQuit(theSUPerm):
+            self.chooseTheOption()
+        else:
+            if theSUPerm == 'Y' or theSUPerm == 'y':
+                theWithOption += "SUPERUSER "
+            else:
+                theWithOption += "NOSUPERUSER "
+
+        theInheritPerm = input(">>Will this role inherit from a father role? [Y/N]\n")
+        if self.checkForQuit(theInheritPerm):
+            self.chooseTheOption()
+        else:
+            if theInheritPerm == 'Y' or theInheritPerm == 'y':
+                theWithOption += "INHERIT "
+            else:
+                theWithOption += "NOINHERIT "
+
+        theReplicationPerm = input(">>Will this user be used for replication purposes? [Y/N]\n")
+        if self.checkForQuit(theReplicationPerm):
+            self.chooseTheOption()
+        else:
+            if theReplicationPerm == 'Y' or theReplicationPerm == 'y':
+                theWithOption += "REPLICATION "
+            else:
+                theWithOption += "NOREPLICATION "
+        print(theWithOption)
+
+        if theWithOption.endswith(" "):
+            theWithOption.rstrip()
+
+        theQuery = """CREATE ROLE {} WITH {}""" \
+            .format(theRoleName, theWithOption)
+
+        try:
+            self.theCursor.execute(theQuery)
+            print("Succesful creation of role {}"
+                  .format(theRoleName))
+
+            self.theConnection.commit()
+
+            theOptions = self.checkForMoreInputs()
+
+            if theOptions == 'Y' or theOptions == 'y':
+                self.chooseTheOption()
+
+        except (Exception, psycopg2.DatabaseError) as theError:
+            print(self.formatTheError(theError))
+
+            theMessage = self.checkForTryAgain()
+
+            if theMessage == 'Y' or theMessage == 'y':
+                self.selectTable()
+
+            else:
+                self.closeApp()
+
+        finally:
+            if self.theConnection is not None:
+                self.theConnection.close()
+
+    def createRolePassword(self, theRoleName):
+        theRolePassword = getpass.getpass(">>Enter the password for {}:\n"
+                                          .format(theRoleName))
+        theRolePassConfirmation = getpass.getpass(">>Please confirm the password for {}:\n"
+                                                  .format(theRoleName))
+        if theRolePassword == theRolePassConfirmation:
+            print("Passwords match.")
+        else:
+            print("Password doesn't match.")
+            self.createRolePassword(theRoleName)
 
     def checkForTryAgain(self):
         return input(">>Want to try again? [Y/N]\n")
