@@ -19,9 +19,10 @@ class SQLQueries:
             remoteOrLocal = input(">>Are you connecting to a local databse or remote one? [R/L]")
             if remoteOrLocal == "L" or remoteOrLocal == "l":
                 theHost = self.theReader['host']
+                thePort = self.theReader['port']
             else:
-                theHost = input("Please enter the ip address for the remote DB:\n")
-            thePort = self.theReader['port']
+                theHost = input("Please enter the IP address for the remote DB:\n")
+                thePort = input("Please enter the Port number:\n")
             theDBName = input(">>Enter the database you want to connect to:\n")
             theConnectionString = str(
                 """
