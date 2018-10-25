@@ -1,5 +1,4 @@
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+import pyodbc
 import sys
 import Reader
 import os
@@ -10,34 +9,29 @@ class SQLQueries:
     def __init__(self):
 
         self.theConnection = None
-        self.theReader = Reader.Reader().theReader
+        self.readThe = Reader.Reader().theReader
 
         try:
-            theUser = input(">>Enter the role name to login with:\n")
+            theUser = input(">>Enter the username:\n")
             thePassword = getpass.getpass(">>Password for {}: ".format(theUser))
-            print("For Remote type R or r and for Local type L or l")
-            remoteOrLocal = input(">>Are you connecting to a local databse or remote one? [R/L]")
-            if remoteOrLocal == "L" or remoteOrLocal == "l":
-                theHost = self.theReader['host']
-                thePort = self.theReader['port']
-            else:
-                theHost = input("Please enter the IP address for the remote DB:\n")
-                thePort = input("Please enter the Port number:\n")
+            
+            theServer = self.readThe['server']
+            thePort = self.readThe['port']
+            theDriver = self.readThe['driver']
+            
             theDBName = input(">>Enter the database you want to connect to:\n")
-            theConnectionString = str(
-                """
-                user={}
-                password={}
-                host={}
-                port={}
-                dbname={}
-                """
-                    .format(theUser, thePassword, theHost, thePort, theDBName))
-            self.theConnection = psycopg2.connect(theConnectionString)
+            if theDBName == " " or "":
+                theDBName = self.readThe['defaultDB']
+            #theConnectionString = str(
+             #   "DRIVER={};SERVER='{}';PORT={};DATABASE='{}';UID='{}';PWD={}").format(theDriver, theServer, thePort, theDBName, theUser, thePassword)
+            
+            theConnectionString = "DRIVER={};SERVER={};PORT={};DATABASE={};UID={};PWD={}".format(theDriver, theServer, thePort, theDBName, theUser, thePassword)
+            #self.theConnection = pyodbc.connect('DRIVER='+theDriver+';SERVER='+theServer+';PORT=1433;DATABASE='+theDBName+';UID='+theUser+';PWD='+ thePassword)
+            self.theConnection = pyodbc.connect(theConnectionString, autocommit=True)
+            print(theConnectionString)
             self.theCursor = self.theConnection.cursor()
-            self.theConnection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
-        except (Exception, psycopg2.DatabaseError) as error:
+        except (Exception, pyodbc.DatabaseError) as error:
             print(error)
             self.closeApp()
 
@@ -53,7 +47,7 @@ class SQLQueries:
 #              \_____|\___/ |_| |_| \__, ||_|   \___||_____/  \___\_\|______|          #
 #                                    __/ |                                             #
 #                                   |___/                                              #
-#                                 BY ERICK COBO                                        #
+#                              BY FERNANDO COBO                                        #
 ########################################################################################
 #                              __  __                                                  #
 #                             |  \/  |                                                 #
@@ -68,9 +62,8 @@ class SQLQueries:
 #    7.  DELETE                   8.  DROP DATABASE          9. DROP TABLE             #
 #    10. TRUNCATE TABLE           11. SELECT                12. INSERT                 #
 #                                                                                      #
-#                                 13. CREATE ROLE                                      #
 #                                                                                      #
-#                                 14. QUIT                                             #
+#                                 13. QUIT                                             #
 #                                                                                      #
 ########################################################################################
                     """
@@ -115,10 +108,7 @@ class SQLQueries:
         elif theOption == "12":
             self.insertValues()
 
-        elif theOption == "13":
-            self.createRole()
-
-        elif theOption == "14" \
+        elif theOption == "13" \
                 or theOption == "q" \
                 or theOption == "Quit" \
                 or theOption == "quit":
@@ -132,7 +122,7 @@ class SQLQueries:
             self.chooseTheOption()
 
         else:
-            theQuery = """CREATE DATABASE {}""" \
+            theQuery = """CREATE DATABASE {};""" \
                 .format(theDBName)
             print(theQuery)
 
@@ -148,7 +138,7 @@ class SQLQueries:
                 if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
 
-            except (Exception, psycopg2.DatabaseError) as theError:
+            except (Exception, pyodbc.DatabaseError) as theError:
                 print(self.formatTheError(theError))
 
                 theMessage = self.checkForTryAgain()
@@ -189,7 +179,7 @@ class SQLQueries:
                 if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
 
-            except (Exception, psycopg2.DatabaseError) as theError:
+            except (Exception, pyodbc.DatabaseError) as theError:
                 print(self.formatTheError(theError))
 
                 theMessage = self.checkForTryAgain()
@@ -239,7 +229,7 @@ class SQLQueries:
                 if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
 
-            except (Exception, psycopg2.DatabaseError) as theError:
+            except (Exception, pyodbc.DatabaseError) as theError:
                 print(self.formatTheError(theError))
 
                 theMessage = self.checkForTryAgain()
@@ -287,7 +277,7 @@ class SQLQueries:
                 if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
 
-            except (Exception, psycopg2.DatabaseError) as theError:
+            except (Exception, pyodbc.DatabaseError) as theError:
                 print(self.formatTheError(theError))
 
                 theMessage = self.checkForTryAgain()
@@ -317,7 +307,7 @@ class SQLQueries:
                 if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
 
-            except (Exception, psycopg2.DatabaseError) as theError:
+            except (Exception, pyodbc.DatabaseError) as theError:
                 print(self.formatTheError(theError))
 
                 theMessage = self.checkForTryAgain()
@@ -407,7 +397,7 @@ class SQLQueries:
             if theOptions == 'Y' or theOptions == 'y':
                 self.chooseTheOption()
 
-        except (Exception, psycopg2.DatabaseError) as theError:
+        except (Exception, pyodbc.DatabaseError) as theError:
             print(self.formatTheError(theError))
 
             theMessage = self.checkForTryAgain()
@@ -442,7 +432,7 @@ class SQLQueries:
             if theOptions == 'Y' or theOptions == 'y':
                 self.chooseTheOption()
 
-        except (Exception, psycopg2.DatabaseError) as theError:
+        except (Exception, pyodbc.DatabaseError) as theError:
             print(self.formatTheError(theError))
 
             theMessage = self.checkForTryAgain()
@@ -480,7 +470,7 @@ class SQLQueries:
             if theOptions == 'Y' or theOptions == 'y':
                 self.chooseTheOption()
 
-        except (Exception, psycopg2.DatabaseError) as theError:
+        except (Exception, pyodbc.DatabaseError) as theError:
             print(self.formatTheError(theError))
 
             theMessage = self.checkForTryAgain()
@@ -519,7 +509,7 @@ class SQLQueries:
             if theOptions == 'Y' or theOptions == 'y':
                 self.chooseTheOption()
 
-        except (Exception, psycopg2.DatabaseError) as theError:
+        except (Exception, pyodbc.DatabaseError) as theError:
             print(self.formatTheError(theError))
 
             theMessage = self.checkForTryAgain()
@@ -558,7 +548,7 @@ class SQLQueries:
             if theOptions == 'Y' or theOptions == 'y':
                 self.chooseTheOption()
 
-        except (Exception, psycopg2.DatabaseError) as theError:
+        except (Exception, pyodbc.DatabaseError) as theError:
             print(self.formatTheError(theError))
 
             theMessage = self.checkForTryAgain()
@@ -597,7 +587,7 @@ class SQLQueries:
             if theOptions == 'Y' or theOptions == 'y':
                 self.chooseTheOption()
 
-        except (Exception, psycopg2.DatabaseError) as theError:
+        except (Exception, pyodbc.DatabaseError) as theError:
             print(self.formatTheError(theError))
 
             theMessage = self.checkForTryAgain()
@@ -635,7 +625,7 @@ class SQLQueries:
             if theOptions == 'Y' or theOptions == 'y':
                 self.chooseTheOption()
 
-        except (Exception, psycopg2.DatabaseError) as theError:
+        except (Exception, pyodbc.DatabaseError) as theError:
             print(self.formatTheError(theError))
 
             theMessage = self.checkForTryAgain()
@@ -688,7 +678,7 @@ class SQLQueries:
                 if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
 
-            except (Exception, psycopg2.DatabaseError) as theError:
+            except (Exception, pyodbc.DatabaseError) as theError:
                 print(self.formatTheError(theError))
 
                 theMessage = self.checkForTryAgain()
@@ -724,7 +714,7 @@ class SQLQueries:
                 if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
 
-            except (Exception, psycopg2.DatabaseError) as theError:
+            except (Exception, pyodbc.DatabaseError) as theError:
                 print(self.formatTheError(theError))
 
                 theMessage = self.checkForTryAgain()
@@ -759,7 +749,7 @@ class SQLQueries:
                 if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
 
-            except (Exception, psycopg2.DatabaseError) as theError:
+            except (Exception, pyodbc.DatabaseError) as theError:
                 print(self.formatTheError(theError))
 
                 theMessage = self.checkForTryAgain()
@@ -795,7 +785,7 @@ class SQLQueries:
                 if theOptions == 'Y' or theOptions == 'y':
                     self.chooseTheOption()
 
-            except (Exception, psycopg2.DatabaseError) as theError:
+            except (Exception, pyodbc.DatabaseError) as theError:
                 print(self.formatTheError(theError))
 
                 theMessage = self.checkForTryAgain()
@@ -839,7 +829,7 @@ class SQLQueries:
                 elif theOptions == 'N' or theOptions == 'n':
                     self.chooseTheOption()
 
-            except (Exception, psycopg2.DatabaseError) as theError:
+            except (Exception, pyodbc.DatabaseError) as theError:
                 print(self.formatTheError(theError))
 
                 theMessage = self.checkForTryAgain()
@@ -893,7 +883,7 @@ class SQLQueries:
                         if theOptions == 'Y' or theOptions == 'y':
                             self.chooseTheOption()
 
-                    except (Exception, psycopg2.DatabaseError) as theError:
+                    except (Exception, pyodbc.DatabaseError) as theError:
                         print(self.formatTheError(theError))
 
                         theMessage = self.checkForTryAgain()
@@ -963,7 +953,7 @@ class SQLQueries:
                             if theOptions == 'Y' or theOptions == 'y':
                                 self.chooseTheOption()
 
-                        except (Exception, psycopg2.DatabaseError) as theError:
+                        except (Exception, pyodbc.DatabaseError) as theError:
                             print(self.formatTheError(theError))
 
                             theMessage = self.checkForTryAgain()
@@ -1003,7 +993,7 @@ class SQLQueries:
                             if theOptions == 'Y' or theOptions == 'y':
                                 self.chooseTheOption()
 
-                        except (Exception, psycopg2.DatabaseError) as theError:
+                        except (Exception, pyodbc.DatabaseError) as theError:
                             print(self.formatTheError(theError))
 
                             theMessage = self.checkForTryAgain()
@@ -1052,7 +1042,7 @@ class SQLQueries:
                     if theOptions == 'Y' or theOptions == 'y':
                         self.chooseTheOption()
 
-                except (Exception, psycopg2.DatabaseError) as theError:
+                except (Exception, pyodbc.DatabaseError) as theError:
                     print(self.formatTheError(theError))
 
                     theMessage = self.checkForTryAgain()
@@ -1150,7 +1140,7 @@ class SQLQueries:
             if theOptions == 'Y' or theOptions == 'y':
                 self.chooseTheOption()
 
-        except (Exception, psycopg2.DatabaseError) as theError:
+        except (Exception, pyodbc.DatabaseError) as theError:
             print(self.formatTheError(theError))
 
             theMessage = self.checkForTryAgain()
