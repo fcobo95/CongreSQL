@@ -22,31 +22,31 @@ class SQLQueries:
             theDBName = input(">>Enter the database you want to connect to:\n")
             if theDBName == " " or "":
                 theDBName = self.readThe['defaultDB']
-            #theConnectionString = str(
-             #   "DRIVER={};SERVER='{}';PORT={};DATABASE='{}';UID='{}';PWD={}").format(theDriver, theServer, thePort, theDBName, theUser, thePassword)
-            
             theConnectionString = "DRIVER={};SERVER={};PORT={};DATABASE={};UID={};PWD={}".format(theDriver, theServer, thePort, theDBName, theUser, thePassword)
-            #self.theConnection = pyodbc.connect('DRIVER='+theDriver+';SERVER='+theServer+';PORT=1433;DATABASE='+theDBName+';UID='+theUser+';PWD='+ thePassword)
             self.theConnection = pyodbc.connect(theConnectionString, autocommit=True)
             print(theConnectionString)
             self.theCursor = self.theConnection.cursor()
-
+            self.chooseTheOption()
         except (Exception, pyodbc.DatabaseError) as error:
             print(error)
-            self.closeApp()
+            sys.exit
 
     def chooseTheOption(self):
 
         theMenu = """
 ########################################################################################
-#               _____                                  _____   ____   _                # 
-#              / ____|                                / ____| / __ \ | |               #
-#             | |      ___   _ __    __ _  _ __  ___ | (___  | |  | || |               #
-#             | |     / _ \ | '_ \  / _` || '__|/ _ \ \___ \ | |  | || |               #
-#             | |____| (_) || | | || (_| || |  |  __/ ____) || |__| || |____           #
-#              \_____|\___/ |_| |_| \__, ||_|   \___||_____/  \___\_\|______|          #
-#                                    __/ |                                             #
-#                                   |___/                                              #
+#                                                                                      #
+#   @@@@@@   @@@@@@@@  @@@  @@@  @@@@@@@   @@@@@@@@   @@@@@@    @@@@@@    @@@          #
+#  @@@@@@@@  @@@@@@@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@@@@@@   @@@          #
+#  @@!  @@@       @@!  @@!  @@@  @@!  @@@  @@!       !@@       @@!  @@@   @@!          #
+#  !@!  @!@      !@!   !@!  @!@  !@!  @!@  !@!       !@!       !@!  @!@   !@!          #
+#  @!@!@!@!     @!!    @!@  !@!  @!@!!@!   @!!!:!    !!@@!!    @!@  !@!   @!!          #
+#  !!!@!!!!    !!!     !@!  !!!  !!@!@!    !!!!!:     !!@!!!   !@!  !!!   !!!          #
+#  !!:  !!!   !!:      !!:  !!!  !!: :!!   !!:            !:!  !!:!!:!:   !!:          #
+#  :!:  !:!  :!:       :!:  !:!  :!:  !:!  :!:           !:!   :!: :!:     :!:         #
+#  ::   :::   :: ::::  ::::: ::  ::   :::   :: ::::  :::: ::   ::::: :!    :: ::::     #
+#   :   : :  : :: : :   : :  :    :   : :  : :: ::   :: : :     : :  :::  : :: : :     #
+#                                                                                      #
 #                              BY FERNANDO COBO                                        #
 ########################################################################################
 #                              __  __                                                  #
@@ -70,50 +70,55 @@ class SQLQueries:
         self.clearScreen()
 
         print(theMenu)
-        theOption = input(">>").replace(" ", "")
-
-        if theOption == "1":
-            self.createDataBase()
-
-        elif theOption == "2":
-            self.createTable()
-
-        elif theOption == "3":
-            self.createFunction()
-
-        elif theOption == "4":
-            self.createIndex()
-
-        elif theOption == "5":
-            self.alterOptions()
-
-        elif theOption == "6":
-            self.updateTableColumn()
-
-        elif theOption == "7":
-            self.deleteRow()
-
-        elif theOption == "8":
-            self.dropDatabase()
-
-        elif theOption == "9":
-            self.dropTable()
-
-        elif theOption == "10":
-            self.truncateTable()
-
-        elif theOption == "11":
-            self.selectTable()
-
-        elif theOption == "12":
-            self.insertValues()
-
-        elif theOption == "13" \
-                or theOption == "q" \
-                or theOption == "Quit" \
-                or theOption == "quit":
-            self.clearScreen()
+        theOption = input(">>").lstrip().rstrip()
+        if self.checkForQuit(theOption):
             self.closeApp()
+
+        else:
+            theFunctionRouter = {
+                "1" : self.createDataBase,
+                "2" : self.createTable,
+                "3" : self.createFunction,
+                "4" : self.createIndex,
+                "5" : self.alterTable,
+                "6" : self.updateTableColumn,
+                "7" : self.deleteRow,
+                "8" : self.dropDatabase,
+                "9" : self.dropTable,
+                "10" : self.truncateTable,
+                "11" : self.selectTable,
+                "12" : self.insertValues,
+                "13" : self.closeApp
+                }
+
+            if theOption == "1":
+                theFunctionRouter["1"]()
+            elif theOption == "2":
+                theFunctionRouter["2"]()
+            elif theOption == "3":
+                theFunctionRouter["3"]()
+            elif theOption == "4" :
+                theFunctionRouter["4"]()
+            elif theOption == "5" :
+                theFunctionRouter["5"]()
+            elif theOption == "6" :
+                theFunctionRouter["6"]()
+            elif theOption == "7" :
+                theFunctionRouter["7"]()
+            elif theOption == "8" :
+                theFunctionRouter["8"]()
+            elif theOption == "9":
+                theFunctionRouter["9"]()
+            elif theOption == "10":
+                theFunctionRouter["10"]()
+            elif theOption == "11" :
+                theFunctionRouter["11"]()
+            elif theOption == "12":
+                theFunctionRouter["12"]()
+            elif theOption == "13" or "\quit" or "quit()" or "quit":
+                theFunctionRouter["13"]()
+            elif theOption == None or " " or "":
+                self.chooseTheOption()
 
     def createDataBase(self):
 
@@ -1055,117 +1060,7 @@ class SQLQueries:
 
                 finally:
                     if self.theConnection is not None:
-                        self.theConnection.close()
-
-    def createRole(self):
-
-        theWithOption = ""
-
-        theRoleName = input("Enter the new Role name:\n")
-        if self.checkForQuit(theRoleName):
-            self.chooseTheOption()
-
-        self.createRolePassword(theRoleName)
-
-        theLoginPerm = input(">>Do you want this role to be able to login at all? [Y/N]\n")
-        if self.checkForQuit(theLoginPerm):
-            self.chooseTheOption()
-        else:
-            if theLoginPerm == 'Y' or theLoginPerm == 'y':
-                theWithOption += "LOGIN "
-            else:
-                theWithOption += "NOLOGIN "
-
-        theCreateDBPerm = input(">>Do you want this role to be able to create databases? [Y/N]\n")
-        if self.checkForQuit(theCreateDBPerm):
-            self.chooseTheOption()
-        else:
-            if theCreateDBPerm == 'Y' or theCreateDBPerm == 'y':
-                theWithOption += "CREATEDB "
-            else:
-                theWithOption += "NOCREATEDB "
-
-        theCreateRolePerm = input(">>Will this role be able to create other roles? [Y/N]\n")
-        if self.checkForQuit(theCreateRolePerm):
-            self.chooseTheOption()
-        else:
-            if theCreateRolePerm == 'Y' or theCreateRolePerm == 'y':
-                theWithOption += "CREATEROLE "
-            else:
-                theWithOption += "NOCREATEROLE "
-
-        theSUPerm = input(">>Will this role be granted super user privileges? [Y/N]\n")
-        if self.checkForQuit(theSUPerm):
-            self.chooseTheOption()
-        else:
-            if theSUPerm == 'Y' or theSUPerm == 'y':
-                theWithOption += "SUPERUSER "
-            else:
-                theWithOption += "NOSUPERUSER "
-
-        theInheritPerm = input(">>Will this role inherit from a father role? [Y/N]\n")
-        if self.checkForQuit(theInheritPerm):
-            self.chooseTheOption()
-        else:
-            if theInheritPerm == 'Y' or theInheritPerm == 'y':
-                theWithOption += "INHERIT "
-            else:
-                theWithOption += "NOINHERIT "
-
-        theReplicationPerm = input(">>Will this user be used for replication purposes? [Y/N]\n")
-        if self.checkForQuit(theReplicationPerm):
-            self.chooseTheOption()
-        else:
-            if theReplicationPerm == 'Y' or theReplicationPerm == 'y':
-                theWithOption += "REPLICATION "
-            else:
-                theWithOption += "NOREPLICATION "
-        print(theWithOption)
-
-        if theWithOption.endswith(" "):
-            theWithOption.rstrip()
-
-        theQuery = """CREATE ROLE {} WITH {}""" \
-            .format(theRoleName, theWithOption)
-
-        try:
-            self.theCursor.execute(theQuery)
-            print("Succesful creation of role {}"
-                  .format(theRoleName))
-
-            self.theConnection.commit()
-
-            theOptions = self.checkForMoreInputs()
-
-            if theOptions == 'Y' or theOptions == 'y':
-                self.chooseTheOption()
-
-        except (Exception, pyodbc.DatabaseError) as theError:
-            print(self.formatTheError(theError))
-
-            theMessage = self.checkForTryAgain()
-
-            if theMessage == 'Y' or theMessage == 'y':
-                self.selectTable()
-
-            else:
-                self.closeApp()
-
-        finally:
-            if self.theConnection is not None:
-                self.theConnection.close()
-
-    def createRolePassword(self, theRoleName):
-        theRolePassword = getpass.getpass(">>Enter the password for {}:\n"
-                                          .format(theRoleName))
-        theRolePassConfirmation = getpass.getpass(">>Please confirm the password for {}:\n"
-                                                  .format(theRoleName))
-        if theRolePassword == theRolePassConfirmation:
-            print("Passwords match.")
-
-        else:
-            print("Password doesn't match.")
-            self.createRolePassword(theRoleName)
+                        self.theConnection.close
 
     def checkForTryAgain(self):
         return input(">>Want to try again? [Y/N]\n")
@@ -1176,14 +1071,14 @@ class SQLQueries:
     def checkForMoreInserts(self):
         return input(">>Do you want to insert more values?[Y/N]\n")
 
-    def checkForQuit(self, theTableName):
-        return theTableName == "\quit"
+    def checkForQuit(self, theOption):
+        return theOption == "\quit"
 
     def clearScreen(self):
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def closeApp(self):
-        sys.exit()
+        sys.exit
 
     def formatTheError(self, theError):
         return "Error: {}".format(theError)
