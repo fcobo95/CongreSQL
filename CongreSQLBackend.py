@@ -67,9 +67,9 @@ class SQLQueries:
 #    4.  CREATE INDEX             5.  ALTER                  6. UPDATE                 #
 #    7.  DELETE                   8.  DROP DATABASE          9. DROP TABLE             #
 #    10. TRUNCATE TABLE           11. SELECT                12. INSERT                 #
+#                                 13. Free mode                                        #
 #                                                                                      #
-#                                                                                      #
-#                                 13. QUIT                                             #
+#                                 14. QUIT                                             #
 #                                                                                      #
 ########################################################################################
                     """
@@ -94,7 +94,9 @@ class SQLQueries:
                 "10": self.truncateTable,
                 "11": self.selectTable,
                 "12": self.insertValues,
-                "13": self.closeApp
+                "13": self.freeMode(),
+                "14": self.closeApp,
+                "15": self.chooseTheOption()
                 }
 
             if theOption == "1":
@@ -121,10 +123,12 @@ class SQLQueries:
                 theFunctionRouter["11"]()
             elif theOption == "12":
                 theFunctionRouter["12"]()
-            elif theOption == "13" or "\quit" or "quit()" or "quit":
+            elif theOption == "13":
                 theFunctionRouter["13"]()
+            elif theOption == "14" or "\quit" or "quit()" or "quit":
+                theFunctionRouter["14"]()
             elif theOption is None or " " or "":
-                self.chooseTheOption()
+                theFunctionRouter["15"]()
 
     def createDataBase(self):
 
@@ -1067,7 +1071,44 @@ class SQLQueries:
                 finally:
                     if self.theConnection is not None:
                         self.theConnection.close()
+                        
+    def freeMode(self):
+        theQuery = input(">>Enter your T-SQL statement:\n")
+        if self.checkForQuit(theQuery):
+            self.chooseTheOption()
 
+        if self.checkForQuit(theQuery):
+            self.chooseTheOption()
+
+        else:
+            theQuery = """{}""".format(theQuery)
+
+            try:
+                self.theCursor.execute(theQuery)
+                print("Succesful running T-SQL statement: {}".format(theQuery))
+
+                self.theConnection.commit()
+
+                theOptions = self.checkForMoreInputs()
+
+                if theOptions == 'Y' or theOptions == 'y':
+                    self.chooseTheOption()
+
+            except (Exception, pyodbc.DatabaseError) as theError:
+                print(self.formatTheError(theError))
+
+                theMessage = self.checkForTryAgain()
+
+                if theMessage == 'Y' or theMessage == 'y':
+                    self.createTable()
+
+                else:
+                    self.closeApp()
+
+            finally:
+                if self.theConnection is not None:
+                    self.theConnection.close()
+    
     @staticmethod
     def checkForTryAgain():
         return input(">>Want to try again? [Y/N]\n")
