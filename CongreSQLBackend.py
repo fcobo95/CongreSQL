@@ -98,7 +98,7 @@ class SQLQueries:
                 "14": self.closeApp
                 }
 
-            if theOption is None or " " or "":
+            if theOption is "":
                 self.chooseTheOption()
             elif theOption == "1":
                 theFunctionRouter["1"]()
@@ -1122,7 +1122,9 @@ class SQLQueries:
 
     @staticmethod
     def checkForQuit(theOption):
-        return theOption == "\quit"
+        theQuitOptions = ["\quit", "quit", "exit"]
+        if theOption in theQuitOptions:
+            return theOption
 
     @staticmethod
     def clearScreen():
