@@ -94,12 +94,13 @@ class SQLQueries:
                 "10": self.truncateTable,
                 "11": self.selectTable,
                 "12": self.insertValues,
-                "13": self.freeMode(),
-                "14": self.closeApp,
-                "15": self.chooseTheOption()
+                "13": self.freeMode,
+                "14": self.closeApp
                 }
 
-            if theOption == "1":
+            if theOption is None or " " or "":
+                self.chooseTheOption()
+            elif theOption == "1":
                 theFunctionRouter["1"]()
             elif theOption == "2":
                 theFunctionRouter["2"]()
@@ -127,8 +128,6 @@ class SQLQueries:
                 theFunctionRouter["13"]()
             elif theOption == "14" or "\quit" or "quit()" or "quit":
                 theFunctionRouter["14"]()
-            elif theOption is None or " " or "":
-                theFunctionRouter["15"]()
 
     def createDataBase(self):
 
