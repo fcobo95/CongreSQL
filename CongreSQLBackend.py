@@ -7,19 +7,22 @@ import getpass
 
 class SQLQueries:
     def __init__(self):
-
+        self.clearScreen()
         self.theConnection = None
         self.readThe = Reader.Reader().theReader
 
         try:
             theUser = input(">>Enter the username:\n")
+            self.clearScreen()
             thePassword = getpass.getpass(">>Password for {}: ".format(theUser))
+            self.clearScreen()
             
             theServer = self.readThe['server']
             thePort = self.readThe['port']
             theDriver = self.readThe['driver']
             
             theDBName = input(">>Enter the database you want to connect to:\n")
+            self.clearScreen()
             if theDBName == " " or "":
                 theDBName = self.readThe['defaultDB']
             theConnectionString = "DRIVER={};SERVER={};PORT={};DATABASE={};UID={};PWD={}".format(theDriver, theServer,
@@ -30,7 +33,8 @@ class SQLQueries:
             self.theCursor = self.theConnection.cursor()
             self.chooseTheOption()
         except (Exception, pyodbc.DatabaseError) as error:
-            self.formatTheError(error)
+            print("Something happened")
+            print(self.formatTheError(error))
             sys.exit()
 
     def chooseTheOption(self):
@@ -742,7 +746,7 @@ class SQLQueries:
             self.chooseTheOption()
 
         else:
-            theQuery = """DROP TABLE {} CASCADE CONSTRAINTS""".format(theTableName)
+            theQuery = """DROP TABLE {}""".format(theTableName)
 
             try:
                 self.theCursor.execute(theQuery)

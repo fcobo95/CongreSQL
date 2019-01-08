@@ -1,6 +1,6 @@
 {
-  "server": "tcp:fercobo.database.windows.net,1433",
+  "server": "fercobo.database.windows.net",
   "port": 1433,
-  "driver": "{ODBC Driver 13 for SQL Server}",
+  "driver": "{ODBC Driver 17 for SQL Server}",
   "defaultDB": "master"
 }
