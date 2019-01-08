@@ -67,7 +67,7 @@ class SQLQueries:
 #    4.  CREATE INDEX             5.  ALTER                  6. UPDATE                 #
 #    7.  DELETE                   8.  DROP DATABASE          9. DROP TABLE             #
 #    10. TRUNCATE TABLE           11. SELECT                12. INSERT                 #
-#                                 13. Free mode                                        #
+#                                 13. FREE MODE                                        #
 #                                                                                      #
 #                                 14. QUIT                                             #
 #                                                                                      #
