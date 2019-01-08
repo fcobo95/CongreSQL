@@ -22,14 +22,16 @@ class SQLQueries:
             theDBName = input(">>Enter the database you want to connect to:\n")
             if theDBName == " " or "":
                 theDBName = self.readThe['defaultDB']
-            theConnectionString = "DRIVER={};SERVER={};PORT={};DATABASE={};UID={};PWD={}".format(theDriver, theServer, thePort, theDBName, theUser, thePassword)
+            theConnectionString = "DRIVER={};SERVER={};PORT={};DATABASE={};UID={};PWD={}".format(theDriver, theServer,
+                                                                                                 thePort, theDBName,
+                                                                                                 theUser, thePassword)
             self.theConnection = pyodbc.connect(theConnectionString, autocommit=True)
             print(theConnectionString)
             self.theCursor = self.theConnection.cursor()
             self.chooseTheOption()
         except (Exception, pyodbc.DatabaseError) as error:
             print(error)
-            sys.exit
+            sys.exit()
 
     def chooseTheOption(self):
 
@@ -76,19 +78,19 @@ class SQLQueries:
 
         else:
             theFunctionRouter = {
-                "1" : self.createDataBase,
-                "2" : self.createTable,
-                "3" : self.createFunction,
-                "4" : self.createIndex,
-                "5" : self.alterTable,
-                "6" : self.updateTableColumn,
-                "7" : self.deleteRow,
-                "8" : self.dropDatabase,
-                "9" : self.dropTable,
-                "10" : self.truncateTable,
-                "11" : self.selectTable,
-                "12" : self.insertValues,
-                "13" : self.closeApp
+                "1": self.createDataBase,
+                "2": self.createTable,
+                "3": self.createFunction,
+                "4": self.createIndex,
+                "5": self.alterTable,
+                "6": self.updateTableColumn,
+                "7": self.deleteRow,
+                "8": self.dropDatabase,
+                "9": self.dropTable,
+                "10": self.truncateTable,
+                "11": self.selectTable,
+                "12": self.insertValues,
+                "13": self.closeApp
                 }
 
             if theOption == "1":
@@ -97,27 +99,27 @@ class SQLQueries:
                 theFunctionRouter["2"]()
             elif theOption == "3":
                 theFunctionRouter["3"]()
-            elif theOption == "4" :
+            elif theOption == "4":
                 theFunctionRouter["4"]()
-            elif theOption == "5" :
+            elif theOption == "5":
                 theFunctionRouter["5"]()
-            elif theOption == "6" :
+            elif theOption == "6":
                 theFunctionRouter["6"]()
-            elif theOption == "7" :
+            elif theOption == "7":
                 theFunctionRouter["7"]()
-            elif theOption == "8" :
+            elif theOption == "8":
                 theFunctionRouter["8"]()
             elif theOption == "9":
                 theFunctionRouter["9"]()
             elif theOption == "10":
                 theFunctionRouter["10"]()
-            elif theOption == "11" :
+            elif theOption == "11":
                 theFunctionRouter["11"]()
             elif theOption == "12":
                 theFunctionRouter["12"]()
             elif theOption == "13" or "\quit" or "quit()" or "quit":
                 theFunctionRouter["13"]()
-            elif theOption == None or " " or "":
+            elif theOption is None or " " or "":
                 self.chooseTheOption()
 
     def createDataBase(self):
@@ -1060,25 +1062,32 @@ class SQLQueries:
 
                 finally:
                     if self.theConnection is not None:
-                        self.theConnection.close
+                        self.theConnection.close()
 
-    def checkForTryAgain(self):
+    @staticmethod
+    def checkForTryAgain():
         return input(">>Want to try again? [Y/N]\n")
 
-    def checkForMoreInputs(self):
+    @staticmethod
+    def checkForMoreInputs():
         return input(">>Do you want to keep using the app? [Y/N]\n")
 
-    def checkForMoreInserts(self):
+    @staticmethod
+    def checkForMoreInserts():
         return input(">>Do you want to insert more values?[Y/N]\n")
 
-    def checkForQuit(self, theOption):
+    @staticmethod
+    def checkForQuit(theOption):
         return theOption == "\quit"
 
-    def clearScreen(self):
+    @staticmethod
+    def clearScreen():
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    def closeApp(self):
-        sys.exit
+    @staticmethod
+    def closeApp():
+        sys.exit()
 
-    def formatTheError(self, theError):
+    @staticmethod
+    def formatTheError(theError):
         return "Error: {}".format(theError)

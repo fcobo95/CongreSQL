@@ -1,19 +1,21 @@
 import CongreSQLBackend as App
-import getpass
 import sys
+import pyodbc
+
 
 class theApp:
     def __init__(self):
         try:
-            theConsole = App.SQLQueries()
+            App.SQLQueries()
         except(Exception, pyodbc.DatabaseError) as error:
-            sys.exit
             print(error)
+            sys.exit()
+
 
 if __name__ == '__main__':
     def runTheApp():
         try:
             theApp()
-        except:
-            print("[!]ERROR[!]")
+        except Exception as error:
+            print("[!]ERROR[!] Please check: {}".format(error))
     runTheApp()

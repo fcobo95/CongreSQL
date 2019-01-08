@@ -1,3 +1,4 @@
+pyodbc
 beautifulsoup4==4.4.1
 Brlapi==0.6.4
 chardet==2.3.0
