@@ -30,7 +30,7 @@ class SQLQueries:
             self.theCursor = self.theConnection.cursor()
             self.chooseTheOption()
         except (Exception, pyodbc.DatabaseError) as error:
-            print(error)
+            self.formatTheError(error)
             sys.exit()
 
     def chooseTheOption(self):
