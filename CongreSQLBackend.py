@@ -1,6 +1,6 @@
 import pyodbc
 import sys
-import Reader
+from Reader import Reader
 import os
 import getpass
 
@@ -9,7 +9,7 @@ class SQLQueries:
     def __init__(self):
         self.clearScreen()
         self.theConnection = None
-        self.readThe = Reader.Reader().theReader
+        self.readThe = Reader().theReader
 
         try:
             theUser = input(">>Enter the username:\n")
@@ -1122,7 +1122,7 @@ class SQLQueries:
 
     @staticmethod
     def checkForQuit(theOption):
-        theQuitOptions = ["\quit", "quit", "exit"]
+        theQuitOptions = ["\quit", "quit", "exit", "terminate", "end", "close"]
         if theOption in theQuitOptions:
             return theOption
 
