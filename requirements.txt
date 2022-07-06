@@ -6,7 +6,7 @@ click==6.7
 command-not-found==0.3
 defer==1.0.6
 Flask==0.12.2
-html5lib==0.999
+html5lib==0.999999999
 itsdangerous==0.24
 Jinja2==2.7.3
 language-selector==0.1
